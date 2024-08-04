@@ -10,11 +10,11 @@
       logicalFilePath="homework-2">  
     
     <changeSet id="homework-2-user" author="Seraphim Uhanov">
-        <sqlFile encoding="utf8" path="./sql/01.create-users-table.sql" relativeToChangelogFile="true"/>
+        <sqlFile encoding="utf8" path="./sql/01.create-user-table.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
     <changeSet id="homework-2-creator" author="Seraphim Uhanov">
-        <sqlFile encoding="utf8" path="./sql/02.create-creators-table.sql" relativeToChangelogFile="true"/>
+        <sqlFile encoding="utf8" path="./sql/02.create-creator-table.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
     <changeSet id="homework-2-staff" author="Seraphim Uhanov">
@@ -22,27 +22,23 @@
     </changeSet>
 
     <changeSet id="homework-2-product" author="Seraphim Uhanov">
-        <sqlFile encoding="utf8" path="./sql/04.create-products-table.sql" relativeToChangelogFile="true"/>
+        <sqlFile encoding="utf8" path="./sql/04.create-product-table.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
     <changeSet id="homework-2-genre" author="Seraphim Uhanov">
-        <sqlFile encoding="utf8" path="./sql/05.create-genres-table.sql" relativeToChangelogFile="true"/>
+        <sqlFile encoding="utf8" path="./sql/05.create-genre-table.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
     <changeSet id="homework-2-product_genre" author="Seraphim Uhanov">
-        <sqlFile encoding="utf8" path="./sql/06.create-products_genres-table.sql" relativeToChangelogFile="true"/>
+        <sqlFile encoding="utf8" path="./sql/06.create-product_genre-table.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
     <changeSet id="homework-2-purchase" author="Seraphim Uhanov">
-        <sqlFile encoding="utf8" path="./sql/07.create-purchases-table.sql" relativeToChangelogFile="true"/>
-    </changeSet>
-
-    <changeSet id="homework-2-add-library" author="Seraphim Uhanov">
-        <sqlFile encoding="utf8" path="./sql/08.create-library-table.sql" relativeToChangelogFile="true"/>
+        <sqlFile encoding="utf8" path="./sql/07.create-purchase-table.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
     <changeSet id="homework-2-age_rating" author="Seraphim Uhanov">
-        <sqlFile encoding="utf8" path="./sql/09.create-age_ratings-table.sql" relativeToChangelogFile="true"/>
+        <sqlFile encoding="utf8" path="./sql/09.create-age_rating-table.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
     <changeSet id="homework-2-add-index" author="Seraphim Uhanov">

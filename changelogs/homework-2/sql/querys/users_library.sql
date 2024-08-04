@@ -1,3 +1,3 @@
-SELECT u.id AS user, l.product_id AS product
-  FROM users AS u
-  LEFT JOIN library AS l ON u.id = l.user_id
+SELECT u.id AS user, p.product_id AS product
+  FROM user AS u
+  LEFT JOIN purchase AS p ON u.id = p.user_id

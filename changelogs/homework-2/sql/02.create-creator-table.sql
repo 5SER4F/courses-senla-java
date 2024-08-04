@@ -1,5 +1,5 @@
-CREATE TABLE creators (
-  id integer PRIMARY KEY,
+CREATE TABLE creator (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid (),
   password varchar NOT NULL,
   name varchar NOT NULL,
   registration_date timestamp
