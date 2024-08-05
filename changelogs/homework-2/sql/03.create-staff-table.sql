@@ -1,4 +1,4 @@
-CREATE TABLE staff (
+CREATE TABLE IF NOT EXISTS staff (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid (),
   password varchar NOT NULL,
   firstname varchar NOT NULL,
