@@ -37,7 +37,7 @@ public class BeanFactory {
 
     private static final BeanFactory beanFactory;
     private final BeanDefinitionsLoader beanDefinitionsLoader;
-    public final Map<String, Object> createdBeans = new HashMap<>();
+    private final Map<String, Object> createdBeans = new HashMap<>();
 
     private BeanFactory(BeanDefinitionsLoader beanDefinitionsLoader) {
         this.beanDefinitionsLoader = beanDefinitionsLoader;
@@ -193,7 +193,7 @@ public class BeanFactory {
         }
     }
 
-    public Object instantiateWithConstructor(Class<?> beanDefinition) {
+    private Object instantiateWithConstructor(Class<?> beanDefinition) {
         Constructor<?> constructor = Arrays.stream(beanDefinition.getConstructors())
                 .filter(c -> c.isAnnotationPresent(Autowire.class))
                 .findFirst().get();//На npe уже была проверка
@@ -252,7 +252,7 @@ public class BeanFactory {
         throw new NoSuchBeanException("No candidate for inject Assignable From type" + typeOfPropertyForInject);
     }
 
-    public boolean isInjectWithConstructor(Class<?> clazz) {
+    private boolean isInjectWithConstructor(Class<?> clazz) {
         long numberOfAutowiredConstructor = Arrays.stream(clazz.getConstructors())
                 .filter(constructor -> constructor.isAnnotationPresent(Autowire.class))
                 .count();
@@ -266,12 +266,12 @@ public class BeanFactory {
                 + clazz.getCanonicalName());
     }
 
-    public boolean isInjectWithSetters(Class<?> clazz) {
+    private boolean isInjectWithSetters(Class<?> clazz) {
         return Arrays.stream(clazz.getMethods())
                 .anyMatch(method -> method.isAnnotationPresent(Autowire.class));
     }
 
-    public boolean isInjectWithField(Class<?> clazz) {
+    private boolean isInjectWithField(Class<?> clazz) {
         return Arrays.stream(clazz.getDeclaredFields())
                 .anyMatch(field -> field.isAnnotationPresent(Autowire.class));
     }

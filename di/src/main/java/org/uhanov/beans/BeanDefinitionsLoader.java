@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 public class BeanDefinitionsLoader {
-    public final Map<String, Class<?>> beanDefinitions = new HashMap<>();
+    private final Map<String, Class<?>> beanDefinitions = new HashMap<>();
 
     private BeanDefinitionsLoader() {
     }
