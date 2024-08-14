@@ -92,14 +92,8 @@ public class BeanFactory {
             return newBean;
         }
 
-        if (isInjectWithSetters(beanDefinition)) {
-            newBean = instantiateWithSetters(beanDefinition);
-            createdBeans.put(beanDefinition.getCanonicalName(), newBean);
-            return newBean;
-        }
-
-        if (isInjectWithField(beanDefinition)) {
-            newBean = instantiateWithFields(beanDefinition);
+        if (isInjectWithSetters(beanDefinition) || isInjectWithField(beanDefinition)) {
+            newBean = instantiateWithSettersAndField(beanDefinition);
             createdBeans.put(beanDefinition.getCanonicalName(), newBean);
             return newBean;
         }
@@ -122,27 +116,10 @@ public class BeanFactory {
         }
     }
 
-
-    private Object instantiateWithFields(Class<?> beanDefinition) {
-        Object newBean;
-        try {
-            if (createdBeans.containsKey(beanDefinition.getCanonicalName())) {
-                newBean = createdBeans.get(beanDefinition.getCanonicalName());
-            } else {
-                newBean = beanDefinition.getConstructor().newInstance();
-            }
-        } catch (ReflectiveOperationException e) {
-            e.printStackTrace();
-            throw new FailedToCreateInstanceException("Bean with setters DI must have default constructor classType="
-                    + beanDefinition);
-        }
-        List<Field> fields = Arrays.stream(beanDefinition.getDeclaredFields())
+    private List<Field> extractFields(Class<?> beanDefinition) {
+        return Arrays.stream(beanDefinition.getDeclaredFields())
                 .filter(field -> field.isAnnotationPresent(Autowire.class))
                 .collect(Collectors.toList());
-        fields
-                .stream()
-                .forEach(field -> injectWithField(newBean, field));
-        return newBean;
     }
 
     private void injectWithField(Object bean, Field field) {
@@ -159,27 +136,22 @@ public class BeanFactory {
         throw new FailedToCreateInstanceException("Cant change field=" + field);
     }
 
-    private Object instantiateWithSetters(Class<?> beanDefinition) {
-        Object newBean;
-        try {
-            if (createdBeans.containsKey(beanDefinition.getCanonicalName())) {
-                newBean = createdBeans.get(beanDefinition.getCanonicalName());
-            } else {
-                newBean = beanDefinition.getConstructor().newInstance();
-            }
-        } catch (ReflectiveOperationException e) {
-            e.printStackTrace();
-            throw new FailedToCreateInstanceException("Bean with setters DI must have default constructor classType="
-                    + beanDefinition);
-        }
-        List<Method> setters = Arrays.stream(beanDefinition.getMethods())
+    private Object instantiateWithSettersAndField(Class<?> beanDefinition) {
+        Object newBean = instantiateWithDefaultConstrictor(beanDefinition);
+        extractSetters(beanDefinition).stream()
+                .forEach(setter -> injectWithSetter(newBean, setter));
+
+        extractFields(beanDefinition).stream()
+                .forEach(field -> injectWithField(newBean, field));
+        return newBean;
+    }
+
+    private List<Method> extractSetters(Class<?> beanDefinition) {
+        return Arrays.stream(beanDefinition.getMethods())
                 .filter(method -> method.isAnnotationPresent(Autowire.class)
                         && method.getReturnType().isAssignableFrom(void.class)
                         && method.getParameters().length == 1)
                 .collect(Collectors.toList());
-        setters.stream()
-                .forEach(setter -> injectWithSetter(newBean, setter));
-        return newBean;
     }
 
     private void injectWithSetter(Object bean, Method setter) {

@@ -20,10 +20,8 @@
     </distributionManagement>
 
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.release>11</maven.compiler.release>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <postgresql.version>42.3.0</postgresql.version>
+        <liquibase-core.version>4.5.0</liquibase-core.version>
     </properties>
 
     <build>
@@ -32,7 +30,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.8.1</version>
+                    <version>${maven-compiler-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <!--start with basic information to get Liquibase plugin:
@@ -70,7 +68,7 @@
         <dependency>
         <groupId>org.liquibase</groupId>
         <artifactId>liquibase-core</artifactId>
-        <version>4.5.0</version>
+        <version>${liquibase-core.version}</version>
         <exclusions>
             <exclusion>
                 <groupId>org.liquibase</groupId>
@@ -82,7 +80,7 @@
         <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
-            <version>42.3.0</version>
+            <version>${postgresql.version}</version>
         </dependency>
 
     </dependencies>

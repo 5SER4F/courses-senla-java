@@ -6,7 +6,7 @@ import org.uhanov.service.ServiceInterface;
 
 @Component
 public class Controller {
-    private ServiceInterface service;
+    private final ServiceInterface service;
 
     @Autowire
     public Controller(ServiceInterface service) {
