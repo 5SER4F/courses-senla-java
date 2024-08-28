@@ -2,13 +2,16 @@ package org.uhanov.dto.mapper;
 
 import org.mapstruct.Mapper;
 import org.springframework.stereotype.Component;
-import org.uhanov.dto.UserDTO;
+import org.uhanov.dto.UserAuthDTO;
+import org.uhanov.dto.UserFullDTO;
 import org.uhanov.model.User;
 
 @Mapper(componentModel = "spring")
 @Component
 public interface UserMapper {
-    User toModel(UserDTO dto);
+    User authToModel(UserAuthDTO dto);
 
-    UserDTO toDto(User user);
+    UserFullDTO toFullDto(User user);
+
+    UserAuthDTO toAuthDto(User user);
 }

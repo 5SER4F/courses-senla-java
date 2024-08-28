@@ -13,26 +13,26 @@ import java.util.UUID;
 @Controller
 @Data
 @RequiredArgsConstructor
-public class PurchaseController implements CRUDController<PurchaseDTO> {
+public class PurchaseController {
     private final PurchaseService service;
     private final ObjectMapper objectMapper;
 
-    @Override
+
     public Object add(PurchaseDTO dto) {
         return writeAsString(service.create(dto));
     }
 
-    @Override
-    public Object update(PurchaseDTO dto) {
-        return writeAsString(service.update(dto));
+
+    public void update(PurchaseDTO dto) {
+        service.update(dto);
     }
 
-    @Override
+
     public Object delete(UUID uuid) {
         return service.delete(uuid) ? "200 OK" : "404 not found";
     }
 
-    @Override
+
     public Object get(UUID uuid) {
         return writeAsString(service.getById(uuid));
     }

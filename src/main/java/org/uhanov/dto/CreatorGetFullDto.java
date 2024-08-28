@@ -12,11 +12,9 @@ import java.util.UUID;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Data
 @Builder
-public class PurchaseDTO {
+public class CreatorGetFullDto {
     private UUID id;
-    private UUID userId;
-    private UUID productId;
-    private Double cost;
+    private String name;
     @JsonSerialize(using = LocalDateTimeSerializer.class)
-    private LocalDateTime purchaseDate;
+    private LocalDateTime registrationDate;
 }

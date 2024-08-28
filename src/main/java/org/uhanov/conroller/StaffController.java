@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.uhanov.dto.StaffDTO;
+import org.uhanov.dto.StaffAuthDTO;
 import org.uhanov.service.api.StaffService;
 
 import java.util.UUID;
@@ -13,26 +13,26 @@ import java.util.UUID;
 @Controller
 @Data
 @RequiredArgsConstructor
-public class StaffController implements CRUDController<StaffDTO> {
+public class StaffController {
     private final StaffService service;
     private final ObjectMapper objectMapper;
 
-    @Override
-    public Object add(StaffDTO dto) {
+
+    public Object add(StaffAuthDTO dto) {
         return writeAsString(service.create(dto));
     }
 
-    @Override
-    public Object update(StaffDTO dto) {
-        return writeAsString(service.update(dto));
+
+    public void update(StaffAuthDTO dto) {
+        service.update(dto);
     }
 
-    @Override
+
     public Object delete(UUID uuid) {
         return service.delete(uuid) ? "200 OK" : "404 not found";
     }
 
-    @Override
+
     public Object get(UUID uuid) {
         return writeAsString(service.getById(uuid));
     }

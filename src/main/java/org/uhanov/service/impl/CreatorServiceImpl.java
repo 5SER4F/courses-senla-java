@@ -3,10 +3,10 @@ package org.uhanov.service.impl;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.uhanov.dto.CreatorDTO;
+import org.uhanov.dto.CreatorAuthDTO;
+import org.uhanov.dto.CreatorGetFullDto;
 import org.uhanov.dto.mapper.CreatorMapper;
 import org.uhanov.exception.EntityNotFoundException;
-import org.uhanov.exception.PatchWithoutIdException;
 import org.uhanov.model.Creator;
 import org.uhanov.model.patcher.CreatorPatcher;
 import org.uhanov.repository.CreatorRepositoryMock;
@@ -23,29 +23,25 @@ public class CreatorServiceImpl implements CreatorService {
     private final CreatorPatcher patcher;
 
     @Override
-    public CreatorDTO create(CreatorDTO creatorDTO) {
-        return creatorMapper.toDto(
-                repository.addEntity(
-                        creatorMapper.toModel(creatorDTO)
+    public CreatorGetFullDto create(CreatorAuthDTO creatorAuthDTO) {
+        return creatorMapper.toFullGETDto(
+                repository.saveEntity(
+                        creatorMapper.postDTOToModel(creatorAuthDTO)
                 )
         );
     }
 
     @Override
-    public CreatorDTO getById(UUID uuid) {
-        return creatorMapper.toDto(getEntityById(uuid));
+    public CreatorGetFullDto getById(UUID uuid) {
+        return creatorMapper.toFullGETDto(getEntityById(uuid));
     }
 
     @Override
-    public CreatorDTO update(CreatorDTO creatorDTO) {
-        Creator oldCreator = getEntityById(creatorDTO.getId());
-        Creator patch = creatorMapper.toModel(creatorDTO);
-        if (patch.getId() == null) {
-            throw new PatchWithoutIdException();
-        }
+    public void update(CreatorAuthDTO creatorAuthDTO) {
+        Creator oldCreator = getEntityById(creatorAuthDTO.getId());
+        Creator patch = creatorMapper.postDTOToModel(creatorAuthDTO);
         Creator patchedCreator = patcher.patchEntity(oldCreator, patch);
-        repository.addEntity(patchedCreator);
-        return creatorMapper.toDto(patchedCreator);
+        repository.saveEntity(patchedCreator);
     }
 
     @Override

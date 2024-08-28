@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Builder
@@ -17,6 +17,6 @@ public class Purchase implements EntityWithUUID {
     private UUID userId;
     private UUID productId;
     private Double cost;
-    private Timestamp purchaseDate;
+    private LocalDateTime purchaseDate;
 
 }

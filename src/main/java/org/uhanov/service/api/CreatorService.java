@@ -1,7 +1,17 @@
 package org.uhanov.service.api;
 
-import org.uhanov.dto.CreatorDTO;
+import org.uhanov.dto.CreatorAuthDTO;
+import org.uhanov.dto.CreatorGetFullDto;
 
-public interface CreatorService extends CRUDService<CreatorDTO> {
+import java.util.UUID;
+
+public interface CreatorService {
+    CreatorGetFullDto create(CreatorAuthDTO creatorAuthDTO);
+
+    CreatorGetFullDto getById(UUID uuid);
+
+    void update(CreatorAuthDTO creatorAuthDTO);
+
+    boolean delete(UUID uuid);
 
 }

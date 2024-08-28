@@ -13,26 +13,26 @@ import java.util.UUID;
 @Controller
 @Data
 @RequiredArgsConstructor
-public class AgeRatingController implements CRUDController<AgeRatingDTO> {
+public class AgeRatingController {
     private final AgeRatingService service;
     private final ObjectMapper objectMapper;
 
-    @Override
+
     public Object add(AgeRatingDTO dto) {
         return writeAsString(service.create(dto));
     }
 
-    @Override
-    public Object update(AgeRatingDTO dto) {
-        return writeAsString(service.update(dto));
+
+    public void update(AgeRatingDTO dto) {
+        service.update(dto);
     }
 
-    @Override
+
     public Object delete(UUID uuid) {
         return service.delete(uuid) ? "200 OK" : "404 not found";
     }
 
-    @Override
+
     public Object get(UUID uuid) {
         return writeAsString(service.getById(uuid));
     }

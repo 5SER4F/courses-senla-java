@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import org.uhanov.dto.GenreDTO;
 import org.uhanov.dto.mapper.GenreMapper;
 import org.uhanov.exception.EntityNotFoundException;
-import org.uhanov.exception.PatchWithoutIdException;
 import org.uhanov.model.Genre;
 import org.uhanov.model.patcher.GenrePatcher;
 import org.uhanov.repository.GenreRepositoryMock;
@@ -25,7 +24,7 @@ public class GenreServiceImpl implements GenreService {
     @Override
     public GenreDTO create(GenreDTO genreDTO) {
         return genreMapper.toDto(
-                repository.addEntity(
+                repository.saveEntity(
                         genreMapper.toModel(genreDTO)
                 )
         );
@@ -37,15 +36,11 @@ public class GenreServiceImpl implements GenreService {
     }
 
     @Override
-    public GenreDTO update(GenreDTO genreDTO) {
+    public void update(GenreDTO genreDTO) {
         Genre oldGenre = getEntityById(genreDTO.getId());
         Genre patch = genreMapper.toModel(genreDTO);
-        if (patch.getId() == null) {
-            throw new PatchWithoutIdException();
-        }
         Genre patchedGenre = patcher.patchEntity(oldGenre, patch);
-        repository.addEntity(patchedGenre);
-        return genreMapper.toDto(patchedGenre);
+        repository.saveEntity(patchedGenre);
     }
 
     @Override

@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import org.uhanov.dto.PurchaseDTO;
 import org.uhanov.dto.mapper.PurchaseMapper;
 import org.uhanov.exception.EntityNotFoundException;
-import org.uhanov.exception.PatchWithoutIdException;
 import org.uhanov.model.Purchase;
 import org.uhanov.model.patcher.PurchasePatcher;
 import org.uhanov.repository.PurchaseRepositoryMock;
@@ -25,7 +24,7 @@ public class PurchaseServiceImpl implements PurchaseService {
     @Override
     public PurchaseDTO create(PurchaseDTO dto) {
         return purchaseMapper.toDto(
-                repository.addEntity(
+                repository.saveEntity(
                         purchaseMapper.toModel(dto)
                 )
         );
@@ -37,15 +36,11 @@ public class PurchaseServiceImpl implements PurchaseService {
     }
 
     @Override
-    public PurchaseDTO update(PurchaseDTO dto) {
+    public void update(PurchaseDTO dto) {
         Purchase oldPurchase = getEntityById(dto.getId());
         Purchase patch = purchaseMapper.toModel(dto);
-        if (patch.getId() == null) {
-            throw new PatchWithoutIdException();
-        }
         Purchase patchedPurchase = patcher.patchEntity(oldPurchase, patch);
-        repository.addEntity(patchedPurchase);
-        return purchaseMapper.toDto(patchedPurchase);
+        repository.saveEntity(patchedPurchase);
     }
 
     @Override

@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Builder
@@ -16,5 +16,5 @@ public class Creator implements EntityWithUUID {
     private UUID id;
     private String password;
     private String name;
-    private Timestamp registrationDate;
+    private LocalDateTime registrationDate;
 }

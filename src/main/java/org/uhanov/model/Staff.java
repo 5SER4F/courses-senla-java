@@ -5,7 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Builder
@@ -17,6 +18,6 @@ public class Staff implements EntityWithUUID {
     private String password;
     private String firstname;
     private String surname;
-    private Timestamp birthDate;
-    private Timestamp registrationDate;
+    private LocalDate birthDate;
+    private LocalDateTime registrationDate;
 }

@@ -3,10 +3,10 @@ package org.uhanov.service.impl;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.uhanov.dto.UserDTO;
+import org.uhanov.dto.UserAuthDTO;
+import org.uhanov.dto.UserFullDTO;
 import org.uhanov.dto.mapper.UserMapper;
 import org.uhanov.exception.EntityNotFoundException;
-import org.uhanov.exception.PatchWithoutIdException;
 import org.uhanov.model.User;
 import org.uhanov.model.patcher.UserPatcher;
 import org.uhanov.repository.UserRepositoryMock;
@@ -23,29 +23,25 @@ public class UserServiceImpl implements UserService {
     private final UserPatcher patcher;
 
     @Override
-    public UserDTO create(UserDTO dto) {
-        return userMapper.toDto(
-                repository.addEntity(
-                        userMapper.toModel(dto)
+    public UserFullDTO create(UserAuthDTO dto) {
+        return userMapper.toFullDto(
+                repository.saveEntity(
+                        userMapper.authToModel(dto)
                 )
         );
     }
 
     @Override
-    public UserDTO getById(UUID uuid) {
-        return userMapper.toDto(getEntityById(uuid));
+    public UserFullDTO getById(UUID uuid) {
+        return userMapper.toFullDto(getEntityById(uuid));
     }
 
     @Override
-    public UserDTO update(UserDTO dto) {
+    public void update(UserAuthDTO dto) {
         User oldUser = getEntityById(dto.getId());
-        User patch = userMapper.toModel(dto);
-        if (patch.getId() == null) {
-            throw new PatchWithoutIdException();
-        }
+        User patch = userMapper.authToModel(dto);
         User patchedUser = patcher.patchEntity(oldUser, patch);
-        repository.addEntity(patchedUser);
-        return userMapper.toDto(patchedUser);
+        repository.saveEntity(patchedUser);
     }
 
     @Override

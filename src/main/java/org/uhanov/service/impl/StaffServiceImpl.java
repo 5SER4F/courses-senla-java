@@ -3,10 +3,10 @@ package org.uhanov.service.impl;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.uhanov.dto.StaffDTO;
+import org.uhanov.dto.StaffAuthDTO;
+import org.uhanov.dto.StaffFullDTO;
 import org.uhanov.dto.mapper.StaffMapper;
 import org.uhanov.exception.EntityNotFoundException;
-import org.uhanov.exception.PatchWithoutIdException;
 import org.uhanov.model.Staff;
 import org.uhanov.model.patcher.StaffPatcher;
 import org.uhanov.repository.StaffRepositoryMock;
@@ -23,29 +23,25 @@ public class StaffServiceImpl implements StaffService {
     private final StaffPatcher patcher;
 
     @Override
-    public StaffDTO create(StaffDTO dto) {
-        return staffMapper.toDto(
-                repository.addEntity(
-                        staffMapper.toModel(dto)
+    public StaffFullDTO create(StaffAuthDTO dto) {
+        return staffMapper.toFullDTO(
+                repository.saveEntity(
+                        staffMapper.authToModel(dto)
                 )
         );
     }
 
     @Override
-    public StaffDTO getById(UUID uuid) {
-        return staffMapper.toDto(getEntityById(uuid));
+    public StaffFullDTO getById(UUID uuid) {
+        return staffMapper.toFullDTO(getEntityById(uuid));
     }
 
     @Override
-    public StaffDTO update(StaffDTO dto) {
+    public void update(StaffAuthDTO dto) {
         Staff oldStaff = getEntityById(dto.getId());
-        Staff patch = staffMapper.toModel(dto);
-        if (patch.getId() == null) {
-            throw new PatchWithoutIdException();
-        }
+        Staff patch = staffMapper.authToModel(dto);
         Staff patchedStaff = patcher.patchEntity(oldStaff, patch);
-        repository.addEntity(patchedStaff);
-        return staffMapper.toDto(patchedStaff);
+        repository.saveEntity(patchedStaff);
     }
 
     @Override

@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.uhanov.dto.AgeRatingDTO;
 import org.uhanov.dto.mapper.AgeRatingMapper;
 import org.uhanov.exception.EntityNotFoundException;
-import org.uhanov.exception.PatchWithoutIdException;
 import org.uhanov.model.AgeRating;
 import org.uhanov.model.patcher.AgeRatingPatcher;
 import org.uhanov.repository.AgeRatingRepositoryMock;
@@ -26,7 +25,7 @@ public class AgeRatingServiceImpl implements AgeRatingService {
     @Override
     public AgeRatingDTO create(AgeRatingDTO ageRatingDTO) {
         return ageRatingMapper.toDto(
-                repository.addEntity(
+                repository.saveEntity(
                         ageRatingMapper.toModel(ageRatingDTO)
                 )
         );
@@ -40,15 +39,11 @@ public class AgeRatingServiceImpl implements AgeRatingService {
     }
 
     @Override
-    public AgeRatingDTO update(AgeRatingDTO ageRatingDTO) {
+    public void update(AgeRatingDTO ageRatingDTO) {
         AgeRating oldAgeRating = getEntityById(ageRatingDTO.getId());
         AgeRating patch = ageRatingMapper.toModel(ageRatingDTO);
-        if (patch.getId() == null) {
-            throw new PatchWithoutIdException();
-        }
         AgeRating patchedAgeRating = patcher.patchEntity(oldAgeRating, patch);
-        repository.addEntity(patchedAgeRating);
-        return ageRatingMapper.toDto(patchedAgeRating);
+        repository.saveEntity(patchedAgeRating);
     }
 
     @Override

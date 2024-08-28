@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Builder
@@ -16,7 +16,7 @@ public class Product implements EntityWithUUID {
     private UUID id;
     private UUID creatorId;
     private String name;
-    private Timestamp dateAdded;
+    private LocalDateTime dateAdded;
     private UUID ageRatingId;
     private Double price;
 }

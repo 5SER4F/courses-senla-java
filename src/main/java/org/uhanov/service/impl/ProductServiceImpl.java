@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import org.uhanov.dto.ProductDTO;
 import org.uhanov.dto.mapper.ProductMapper;
 import org.uhanov.exception.EntityNotFoundException;
-import org.uhanov.exception.PatchWithoutIdException;
 import org.uhanov.model.Product;
 import org.uhanov.model.patcher.ProductPatcher;
 import org.uhanov.repository.ProductRepositoryMock;
@@ -25,7 +24,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductDTO create(ProductDTO dto) {
         return productMapper.toDto(
-                repository.addEntity(
+                repository.saveEntity(
                         productMapper.toModel(dto)
                 )
         );
@@ -37,15 +36,11 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDTO update(ProductDTO dto) {
+    public void update(ProductDTO dto) {
         Product oldProduct = getEntityById(dto.getId());
         Product patch = productMapper.toModel(dto);
-        if (patch.getId() == null) {
-            throw new PatchWithoutIdException();
-        }
         Product patchedProduct = patcher.patchEntity(oldProduct, patch);
-        repository.addEntity(patchedProduct);
-        return productMapper.toDto(patchedProduct);
+        repository.saveEntity(patchedProduct);
     }
 
     @Override

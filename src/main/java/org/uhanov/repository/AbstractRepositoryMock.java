@@ -2,15 +2,12 @@ package org.uhanov.repository;
 
 import org.uhanov.model.EntityWithUUID;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 public abstract class AbstractRepositoryMock<T extends EntityWithUUID> {
     protected Map<UUID, T> entities = new HashMap<>();
 
-    public T addEntity(T entity) {
+    public T saveEntity(T entity) {
         entities.put(entity.getId(), entity);
         return entity;
     }
@@ -21,6 +18,10 @@ public abstract class AbstractRepositoryMock<T extends EntityWithUUID> {
 
     public boolean removeByUUID(UUID uuid) {
         return entities.remove(uuid, entities.get(uuid));
+    }
+
+    public Collection<T> getAll() {
+        return entities.values();
     }
 }
 
