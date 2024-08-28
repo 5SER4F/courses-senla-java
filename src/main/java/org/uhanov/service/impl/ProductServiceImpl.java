@@ -37,10 +37,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void update(ProductDTO dto) {
-        Product oldProduct = getEntityById(dto.getId());
-        Product patch = productMapper.toModel(dto);
-        Product patchedProduct = patcher.patchEntity(oldProduct, patch);
-        repository.saveEntity(patchedProduct);
+        Product product = getEntityById(dto.getId());
+        patcher.patchEntity(product, dto);
+        repository.saveEntity(product);
     }
 
     @Override

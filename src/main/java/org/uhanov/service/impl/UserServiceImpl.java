@@ -38,10 +38,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void update(UserAuthDTO dto) {
-        User oldUser = getEntityById(dto.getId());
-        User patch = userMapper.authToModel(dto);
-        User patchedUser = patcher.patchEntity(oldUser, patch);
-        repository.saveEntity(patchedUser);
+        User user = getEntityById(dto.getId());
+        patcher.patchEntity(user, dto);
+        repository.saveEntity(user);
     }
 
     @Override

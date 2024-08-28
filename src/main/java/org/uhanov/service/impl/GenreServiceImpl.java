@@ -37,10 +37,9 @@ public class GenreServiceImpl implements GenreService {
 
     @Override
     public void update(GenreDTO genreDTO) {
-        Genre oldGenre = getEntityById(genreDTO.getId());
-        Genre patch = genreMapper.toModel(genreDTO);
-        Genre patchedGenre = patcher.patchEntity(oldGenre, patch);
-        repository.saveEntity(patchedGenre);
+        Genre genre = getEntityById(genreDTO.getId());
+        patcher.patchEntity(genre, genreDTO);
+        repository.saveEntity(genre);
     }
 
     @Override

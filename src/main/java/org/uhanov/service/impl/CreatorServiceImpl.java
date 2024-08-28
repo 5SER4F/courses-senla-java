@@ -8,6 +8,7 @@ import org.uhanov.dto.CreatorGetFullDto;
 import org.uhanov.dto.mapper.CreatorMapper;
 import org.uhanov.exception.EntityNotFoundException;
 import org.uhanov.model.Creator;
+import org.uhanov.model.patcher.CreatorNewPatcher;
 import org.uhanov.model.patcher.CreatorPatcher;
 import org.uhanov.repository.CreatorRepositoryMock;
 import org.uhanov.service.api.CreatorService;
@@ -20,7 +21,7 @@ import java.util.UUID;
 public class CreatorServiceImpl implements CreatorService {
     private final CreatorRepositoryMock repository;
     private final CreatorMapper creatorMapper;
-    private final CreatorPatcher patcher;
+    private final CreatorNewPatcher patcher;
 
     @Override
     public CreatorGetFullDto create(CreatorAuthDTO creatorAuthDTO) {
@@ -38,10 +39,9 @@ public class CreatorServiceImpl implements CreatorService {
 
     @Override
     public void update(CreatorAuthDTO creatorAuthDTO) {
-        Creator oldCreator = getEntityById(creatorAuthDTO.getId());
-        Creator patch = creatorMapper.postDTOToModel(creatorAuthDTO);
-        Creator patchedCreator = patcher.patchEntity(oldCreator, patch);
-        repository.saveEntity(patchedCreator);
+        Creator creator = getEntityById(creatorAuthDTO.getId());
+        patcher.patchEntity(creator, creatorAuthDTO);
+        repository.saveEntity(creator);
     }
 
     @Override

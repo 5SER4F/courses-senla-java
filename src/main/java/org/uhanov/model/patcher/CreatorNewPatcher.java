@@ -5,5 +5,5 @@ import org.uhanov.dto.CreatorAuthDTO;
 import org.uhanov.model.Creator;
 
 @Component
-public class CreatorPatcher extends EntityPatcher<Creator, CreatorAuthDTO> {
+public class CreatorNewPatcher extends EntityPatcher<Creator, CreatorAuthDTO> {
 }

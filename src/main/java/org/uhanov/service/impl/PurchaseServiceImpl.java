@@ -37,10 +37,9 @@ public class PurchaseServiceImpl implements PurchaseService {
 
     @Override
     public void update(PurchaseDTO dto) {
-        Purchase oldPurchase = getEntityById(dto.getId());
-        Purchase patch = purchaseMapper.toModel(dto);
-        Purchase patchedPurchase = patcher.patchEntity(oldPurchase, patch);
-        repository.saveEntity(patchedPurchase);
+        Purchase purchase = getEntityById(dto.getId());
+        patcher.patchEntity(purchase, dto);
+        repository.saveEntity(purchase);
     }
 
     @Override

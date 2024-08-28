@@ -40,10 +40,9 @@ public class AgeRatingServiceImpl implements AgeRatingService {
 
     @Override
     public void update(AgeRatingDTO ageRatingDTO) {
-        AgeRating oldAgeRating = getEntityById(ageRatingDTO.getId());
-        AgeRating patch = ageRatingMapper.toModel(ageRatingDTO);
-        AgeRating patchedAgeRating = patcher.patchEntity(oldAgeRating, patch);
-        repository.saveEntity(patchedAgeRating);
+        AgeRating ageRating = getEntityById(ageRatingDTO.getId());
+        patcher.patchEntity(ageRating, ageRatingDTO);
+        repository.saveEntity(ageRating);
     }
 
     @Override

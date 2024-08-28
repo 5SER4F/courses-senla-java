@@ -38,10 +38,9 @@ public class StaffServiceImpl implements StaffService {
 
     @Override
     public void update(StaffAuthDTO dto) {
-        Staff oldStaff = getEntityById(dto.getId());
-        Staff patch = staffMapper.authToModel(dto);
-        Staff patchedStaff = patcher.patchEntity(oldStaff, patch);
-        repository.saveEntity(patchedStaff);
+        Staff staff = getEntityById(dto.getId());
+        patcher.patchEntity(staff, dto);
+        repository.saveEntity(staff);
     }
 
     @Override
