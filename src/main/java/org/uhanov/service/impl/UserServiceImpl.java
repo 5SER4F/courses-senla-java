@@ -55,13 +55,13 @@ public class UserServiceImpl implements UserService {
     public void moneyTransfer(UUID senderId, UUID recipientId, double amount) {
         User sender = userRepository.get(senderId);
         User recipient = userRepository.get(recipientId);
-        if (sender.getBalance() - amount < 0) {
-            throw new MoneyTransferException("User with id=" + senderId +
-                    "trying transfer more money then have");
-        }
         sender.changeBalance(-amount);
         recipient.changeBalance(amount);
         userRepository.update(sender);
         userRepository.update(recipient);
+        if (sender.getBalance() < 0) {
+            throw new MoneyTransferException("User with id=" + senderId +
+                    "trying transfer more money then have");
+        }
     }
 }
