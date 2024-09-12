@@ -15,4 +15,6 @@ public interface UserService {
     void update(UserAuthDTO dto);
 
     boolean delete(UUID uuid);
+
+    void moneyTransfer(UUID senderId, UUID recipientId, double amount);
 }

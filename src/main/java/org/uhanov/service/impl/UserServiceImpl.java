@@ -6,11 +6,12 @@ import org.springframework.stereotype.Service;
 import org.uhanov.dto.UserAuthDTO;
 import org.uhanov.dto.UserFullDTO;
 import org.uhanov.dto.mapper.UserMapper;
-import org.uhanov.exception.EntityNotFoundException;
+import org.uhanov.exception.MoneyTransferException;
 import org.uhanov.model.User;
 import org.uhanov.model.patcher.UserPatcher;
-import org.uhanov.repository.UserRepositoryMock;
+import org.uhanov.repository.api.UserRepository;
 import org.uhanov.service.api.UserService;
+import org.uhanov.transaction.Transaction;
 
 import java.util.UUID;
 
@@ -18,14 +19,14 @@ import java.util.UUID;
 @Data
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    private final UserRepositoryMock repository;
+    private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final UserPatcher patcher;
 
     @Override
     public UserFullDTO create(UserAuthDTO dto) {
         return userMapper.toFullDto(
-                repository.saveEntity(
+                userRepository.add(
                         userMapper.authToModel(dto)
                 )
         );
@@ -33,23 +34,34 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserFullDTO getById(UUID uuid) {
-        return userMapper.toFullDto(getEntityById(uuid));
+        return userMapper.toFullDto(userRepository.get(uuid));
     }
 
     @Override
     public void update(UserAuthDTO dto) {
-        User user = getEntityById(dto.getId());
+        User user = userRepository.get(dto.getId());
         patcher.patchEntity(user, dto);
-        repository.saveEntity(user);
+        userRepository.update(user);
     }
 
     @Override
     public boolean delete(UUID uuid) {
-        return repository.removeByUUID(uuid);
+        userRepository.remove(uuid);
+        return true;
     }
 
-    private User getEntityById(UUID uuid) {
-        return repository.getByUUID(uuid)
-                .orElseThrow(EntityNotFoundException::new);
+    @Transaction
+    @Override
+    public void moneyTransfer(UUID senderId, UUID recipientId, double amount) {
+        User sender = userRepository.get(senderId);
+        User recipient = userRepository.get(recipientId);
+        if (sender.getBalance() - amount < 0) {
+            throw new MoneyTransferException("User with id=" + senderId +
+                    "trying transfer more money then have");
+        }
+        sender.changeBalance(-amount);
+        recipient.changeBalance(amount);
+        userRepository.update(sender);
+        userRepository.update(recipient);
     }
 }

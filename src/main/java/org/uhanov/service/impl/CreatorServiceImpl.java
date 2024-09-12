@@ -9,8 +9,7 @@ import org.uhanov.dto.mapper.CreatorMapper;
 import org.uhanov.exception.EntityNotFoundException;
 import org.uhanov.model.Creator;
 import org.uhanov.model.patcher.CreatorNewPatcher;
-import org.uhanov.model.patcher.CreatorPatcher;
-import org.uhanov.repository.CreatorRepositoryMock;
+import org.uhanov.repository.inMemory.CreatorRepositoryMock;
 import org.uhanov.service.api.CreatorService;
 
 import java.util.UUID;

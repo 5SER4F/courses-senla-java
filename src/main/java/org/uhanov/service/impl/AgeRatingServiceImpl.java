@@ -9,7 +9,7 @@ import org.uhanov.dto.mapper.AgeRatingMapper;
 import org.uhanov.exception.EntityNotFoundException;
 import org.uhanov.model.AgeRating;
 import org.uhanov.model.patcher.AgeRatingPatcher;
-import org.uhanov.repository.AgeRatingRepositoryMock;
+import org.uhanov.repository.inMemory.AgeRatingRepositoryMock;
 import org.uhanov.service.api.AgeRatingService;
 
 import java.util.UUID;
