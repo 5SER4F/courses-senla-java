@@ -2,8 +2,6 @@ package org.uhanov.repository;
 
 import lombok.Data;
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import org.uhanov.exception.DbConnectionException;
 
 import java.sql.Connection;
