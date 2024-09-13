@@ -2,6 +2,8 @@ package org.uhanov.repository;
 
 import lombok.Data;
 import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.uhanov.exception.DbConnectionException;
 
 import java.sql.Connection;
@@ -9,11 +11,17 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Component
 @Data
 public class ConnectionHolder implements SimpleConnectionHolder, TransactionalConnectHolder, DisposableBean {
-    private final String url;
-    private final String username;
-    private final String password;
+    @Value("${db.url}")
+    private String url;
+
+    @Value("${db.username}")
+    private String username;
+
+    @Value("${db.password}")
+    private String password;
 
     private final ConcurrentHashMap<Long, Connection> connectionsWithoutTransaction = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Long, Connection> connectionsWithTransaction = new ConcurrentHashMap<>();

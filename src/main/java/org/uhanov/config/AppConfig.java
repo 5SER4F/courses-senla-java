@@ -20,13 +20,6 @@ public class AppConfig {
     }
 
     @Bean
-    public ConnectionHolder connectionHolder() {
-        return new ConnectionHolder(System.getenv("db.url"),
-                System.getenv("db.username"),
-                System.getenv("db.password"));
-    }
-
-    @Bean
     public ObjectMapper objectMapper() {
         return new ObjectMapper();
     }
