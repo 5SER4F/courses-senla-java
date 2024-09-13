@@ -9,6 +9,7 @@ import org.uhanov.repository.SimpleConnectionHolder;
 import org.uhanov.repository.api.UserRepository;
 
 import java.sql.*;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -31,13 +32,15 @@ public class UserRepositoryImpl implements UserRepository {
     private final SimpleConnectionHolder connectionHolder;
 
     @Override
-    public User get(UUID id) {
+    public Optional<User> get(UUID id) {
         Connection connection = connectionHolder.getConnection();
         try (PreparedStatement statement = connection.prepareStatement(GET_USER_BY_ID)) {
             statement.setObject(1, id);
             try (ResultSet rs = statement.executeQuery()) {
-                rs.next();
-                return parseResultSet(rs);
+                if (rs.next()) {
+                    return Optional.of(parseResultSet(rs));
+                }
+                return Optional.empty();
             }
         } catch (SQLException e) {
             e.printStackTrace();

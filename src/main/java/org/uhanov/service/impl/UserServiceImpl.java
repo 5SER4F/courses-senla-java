@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.uhanov.dto.UserAuthDTO;
 import org.uhanov.dto.UserFullDTO;
 import org.uhanov.dto.mapper.UserMapper;
+import org.uhanov.exception.EntityNotFoundException;
 import org.uhanov.exception.MoneyTransferException;
 import org.uhanov.model.User;
 import org.uhanov.model.patcher.UserPatcher;
@@ -34,12 +35,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserFullDTO getById(UUID uuid) {
-        return userMapper.toFullDto(userRepository.get(uuid));
+        return userMapper.toFullDto(get(uuid));
     }
 
     @Override
     public void update(UserAuthDTO dto) {
-        User user = userRepository.get(dto.getId());
+        User user = get(dto.getId());
         patcher.patchEntity(user, dto);
         userRepository.update(user);
     }
@@ -53,8 +54,8 @@ public class UserServiceImpl implements UserService {
     @Transaction
     @Override
     public void moneyTransfer(UUID senderId, UUID recipientId, double amount) {
-        User sender = userRepository.get(senderId);
-        User recipient = userRepository.get(recipientId);
+        User sender = get(senderId);
+        User recipient = get(recipientId);
         sender.changeBalance(-amount);
         recipient.changeBalance(amount);
         userRepository.update(sender);
@@ -63,5 +64,11 @@ public class UserServiceImpl implements UserService {
             throw new MoneyTransferException("User with id=" + senderId +
                     "trying transfer more money then have");
         }
+    }
+
+    private User get(UUID uuid) {
+        return userRepository.get(uuid).orElseThrow(
+                EntityNotFoundException::new
+        );
     }
 }
