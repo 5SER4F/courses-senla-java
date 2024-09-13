@@ -9,7 +9,7 @@ import org.uhanov.dto.mapper.StaffMapper;
 import org.uhanov.exception.EntityNotFoundException;
 import org.uhanov.model.Staff;
 import org.uhanov.model.patcher.StaffPatcher;
-import org.uhanov.repository.StaffRepositoryMock;
+import org.uhanov.repository.inMemory.StaffRepositoryMock;
 import org.uhanov.service.api.StaffService;
 
 import java.util.UUID;

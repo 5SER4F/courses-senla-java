@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.uhanov.dto.UserAuthDTO;
 import org.uhanov.service.api.UserService;
 
+import javax.validation.constraints.Positive;
 import java.util.UUID;
 
 @Controller
@@ -35,6 +36,10 @@ public class UserController {
 
     public Object get(UUID uuid) {
         return writeAsString(service.getById(uuid));
+    }
+
+    public void moneyTransfer(UUID senderId, UUID recipientId, @Positive double amount) {
+        service.moneyTransfer(senderId, recipientId, amount);
     }
 
     private String writeAsString(Object o) {

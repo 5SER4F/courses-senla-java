@@ -18,10 +18,16 @@ public class User implements EntityWithUUID {
     private UUID id;
     private String password;
     private String firstname;
+    private Double balance;
     private String surname;
     private String nickname;
     private LocalDate birthDate;
     private LocalDateTime registrationDate;
     private String country;
+
+    public double changeBalance(double transfer) {
+        balance += transfer;
+        return balance;
+    }
 
 }

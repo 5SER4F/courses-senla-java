@@ -1,11 +1,15 @@
-package org.uhanov.repository;
+package org.uhanov.repository.inMemory;
 
 import org.uhanov.model.EntityWithUUID;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class AbstractRepositoryMock<T extends EntityWithUUID> {
-    protected Map<UUID, T> entities = new HashMap<>();
+    protected Map<UUID, T> entities = new ConcurrentHashMap<>();
 
     public T saveEntity(T entity) {
         entities.put(entity.getId(), entity);

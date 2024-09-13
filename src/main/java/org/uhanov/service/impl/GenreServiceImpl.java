@@ -8,7 +8,7 @@ import org.uhanov.dto.mapper.GenreMapper;
 import org.uhanov.exception.EntityNotFoundException;
 import org.uhanov.model.Genre;
 import org.uhanov.model.patcher.GenrePatcher;
-import org.uhanov.repository.GenreRepositoryMock;
+import org.uhanov.repository.inMemory.GenreRepositoryMock;
 import org.uhanov.service.api.GenreService;
 
 import java.util.UUID;

@@ -17,7 +17,6 @@ public class AgeRatingController {
     private final AgeRatingService service;
     private final ObjectMapper objectMapper;
 
-
     public Object add(AgeRatingDTO dto) {
         return writeAsString(service.create(dto));
     }
