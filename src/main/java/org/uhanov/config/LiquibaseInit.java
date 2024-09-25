@@ -9,19 +9,23 @@ import liquibase.resource.ClassLoaderResourceAccessor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.uhanov.exception.DbConnectionException;
-import org.uhanov.repository.ConnectionHolder;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 
 @Component
 public class LiquibaseInit {
+    @Value("${db.url}")
+    private String url;
+
+    @Value("${db.username}")
+    private String username;
+
+    @Value("${db.password}")
+    private String password;
     @Value("${db.changeLogFile}")
     private String changeLogs;
-    private final ConnectionHolder connectionHolder;
-
-    public LiquibaseInit(ConnectionHolder connectionHolder) {
-        this.connectionHolder = connectionHolder;
-    }
 
     public void updateLiquibase() {
         try (Liquibase liquibase = new Liquibase(changeLogs, new ClassLoaderResourceAccessor(), getDatabase())) {
@@ -35,7 +39,19 @@ public class LiquibaseInit {
     private Database getDatabase() throws DatabaseException, SQLException {
         return DatabaseFactory.getInstance()
                 .findCorrectDatabaseImplementation(new JdbcConnection(
-                        connectionHolder.getConnection()
+                        createNewConnection()
                 ));
+    }
+
+    private Connection createNewConnection() {
+        try {
+            return DriverManager.getConnection(
+                    url,
+                    username,
+                    password);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new DbConnectionException();
+        }
     }
 }

@@ -1,7 +1,7 @@
 package org.uhanov.dto.mapper;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import org.mapstruct.*;
+import org.mapstruct.ap.internal.util.IgnoreJRERequirement;
 import org.springframework.stereotype.Component;
 import org.uhanov.dto.UserAuthDTO;
 import org.uhanov.dto.UserFullDTO;
@@ -17,4 +17,7 @@ public interface UserMapper {
     UserFullDTO toFullDto(User user);
 
     UserAuthDTO toAuthDto(User user);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateUser(UserAuthDTO dto, @MappingTarget User entity);
 }

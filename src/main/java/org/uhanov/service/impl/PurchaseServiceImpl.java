@@ -3,28 +3,31 @@ package org.uhanov.service.impl;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.uhanov.dto.PurchaseDTO;
 import org.uhanov.dto.mapper.PurchaseMapper;
 import org.uhanov.exception.EntityNotFoundException;
 import org.uhanov.model.Purchase;
 import org.uhanov.model.patcher.PurchasePatcher;
+import org.uhanov.repository.api.PurchaseRepository;
 import org.uhanov.repository.inMemory.PurchaseRepositoryMock;
 import org.uhanov.service.api.PurchaseService;
 
+import java.util.Optional;
 import java.util.UUID;
 
+@Transactional
 @Service
 @Data
 @RequiredArgsConstructor
 public class PurchaseServiceImpl implements PurchaseService {
-    private final PurchaseRepositoryMock repository;
+    private final PurchaseRepository repository;
     private final PurchaseMapper purchaseMapper;
-    private final PurchasePatcher patcher;
 
     @Override
     public PurchaseDTO create(PurchaseDTO dto) {
         return purchaseMapper.toDto(
-                repository.saveEntity(
+                repository.save(
                         purchaseMapper.toModel(dto)
                 )
         );
@@ -38,17 +41,19 @@ public class PurchaseServiceImpl implements PurchaseService {
     @Override
     public void update(PurchaseDTO dto) {
         Purchase purchase = getEntityById(dto.getId());
-        patcher.patchEntity(purchase, dto);
-        repository.saveEntity(purchase);
+        purchaseMapper.updatePurchase(dto, purchase);
+//        repository.saveEntity(purchase);
     }
 
     @Override
     public boolean delete(UUID uuid) {
-        return repository.removeByUUID(uuid);
+        repository.deleteById(uuid);
+        return true;
     }
 
     private Purchase getEntityById(UUID uuid) {
-        return repository.getByUUID(uuid)
+        Optional<Purchase> purchase = repository.findById(uuid);
+        return purchase
                 .orElseThrow(EntityNotFoundException::new);
     }
 }

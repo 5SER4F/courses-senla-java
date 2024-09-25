@@ -3,29 +3,30 @@ package org.uhanov.service.impl;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.uhanov.dto.StaffAuthDTO;
 import org.uhanov.dto.StaffFullDTO;
 import org.uhanov.dto.mapper.StaffMapper;
 import org.uhanov.exception.EntityNotFoundException;
 import org.uhanov.model.Staff;
-import org.uhanov.model.patcher.StaffPatcher;
-import org.uhanov.repository.inMemory.StaffRepositoryMock;
+import org.uhanov.repository.api.StaffRepository;
 import org.uhanov.service.api.StaffService;
 
+import java.util.Optional;
 import java.util.UUID;
 
+@Transactional
 @Service
 @Data
 @RequiredArgsConstructor
 public class StaffServiceImpl implements StaffService {
-    private final StaffRepositoryMock repository;
+    private final StaffRepository repository;
     private final StaffMapper staffMapper;
-    private final StaffPatcher patcher;
 
     @Override
     public StaffFullDTO create(StaffAuthDTO dto) {
         return staffMapper.toFullDTO(
-                repository.saveEntity(
+                repository.save(
                         staffMapper.authToModel(dto)
                 )
         );
@@ -39,17 +40,22 @@ public class StaffServiceImpl implements StaffService {
     @Override
     public void update(StaffAuthDTO dto) {
         Staff staff = getEntityById(dto.getId());
-        patcher.patchEntity(staff, dto);
-        repository.saveEntity(staff);
+        staffMapper.updateStaff(dto, staff);
+        repository.save(staff);
     }
 
     @Override
     public boolean delete(UUID uuid) {
-        return repository.removeByUUID(uuid);
+        repository.deleteById(uuid);
+        return true;
     }
 
     private Staff getEntityById(UUID uuid) {
-        return repository.getByUUID(uuid)
-                .orElseThrow(EntityNotFoundException::new);
+        System.out.println("QQQQQQQQQQQQ" + uuid);
+
+        Optional<Staff> staff = repository.findById(uuid);
+        return staff.orElseThrow(
+                        EntityNotFoundException::new
+                );
     }
 }

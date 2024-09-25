@@ -1,42 +1,43 @@
 package org.uhanov;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
+import org.uhanov.conroller.PurchaseController;
+import org.uhanov.conroller.StaffController;
 import org.uhanov.conroller.UserController;
+import org.uhanov.dto.PurchaseDTO;
+import org.uhanov.dto.StaffAuthDTO;
 import org.uhanov.dto.UserAuthDTO;
 import org.uhanov.dto.UserFullDTO;
+import org.uhanov.dto.mapper.PurchaseMapper;
+import org.uhanov.dto.mapper.StaffMapper;
 import org.uhanov.dto.mapper.UserMapper;
 import org.uhanov.exception.MoneyTransferException;
+import org.uhanov.model.Purchase;
+import org.uhanov.model.Staff;
 import org.uhanov.model.User;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
+@ComponentScan("org.uhanov")
 public class Application {
     static final Object lock = new Object();
 
     public static void main(String[] args) {
         var context = new AnnotationConfigApplicationContext("org.uhanov");
+        System.out.println();
 
-        List<Thread> lst = new ArrayList<>();
+//            //В процессе должно выкинуться исключение
+//            testUser(context, 1100);
+//        testUser(context, 600);
 
-        for (int i = 0; i < 10; i++) {
-            lst.add(
-                    new Thread(
-                            () -> testUser(context, 600)
-                    ));
-        }
-
-        lst.forEach(Thread::start);
-
-        while (lst.stream().map(t -> t.isAlive()).reduce((t, t1) -> t || t1).get())
-
-            //В процессе должно выкинуться исключение
-            testUser(context, 1100);
+//        testStaff(context);
         context.close();
 
     }
@@ -56,7 +57,6 @@ public class Application {
                 .country("Wonderland")
                 .build();
         User entity2 = User.builder()
-                .id(UUID.randomUUID())
                 .password("password456")
                 .firstname("Bob")
                 .surname("Builder")
@@ -104,6 +104,59 @@ public class Application {
         controller.delete(addedUser.getId());
         controller.delete(addedUser2.getId());
 
+    }
+    private static void testStaff(ApplicationContext context) {
+        StaffController controller = context.getBean(StaffController.class);
+        StaffMapper mapper = context.getBean(StaffMapper.class);
+        StaffAuthDTO added1, added2;
+        ObjectMapper objectMapper = context.getBean(ObjectMapper.class);
+        Staff entity1 = Staff.builder()
+                .password("password123")
+                .firstname("John")
+                .surname("Doe")
+                .birthDate(LocalDate.now().minusDays(10))
+                .registrationDate(LocalDateTime.now())
+                .build();
+
+        Staff entity2 = Staff.builder()
+                .password("secret123")
+                .firstname("Jane")
+                .surname("Smith")
+                .birthDate(LocalDate.now().minusDays(10))
+                .registrationDate(LocalDateTime.now().minusSeconds(1000 * 60 * 60 * 24))
+                .build();
+
+        StaffAuthDTO patch = StaffAuthDTO.builder()
+                .firstname("NEW_NAME")
+                .surname("NEW_SURNAME")
+                .build();
+
+        System.out.println();
+        System.out.println("Start test " + controller.getClass().getName());
+
+        try {
+            added1 = objectMapper.readValue(controller.add(mapper.toAuthDto(entity1)).toString(), StaffAuthDTO.class);
+            added2 = objectMapper.readValue(controller.add(mapper.toAuthDto(entity2)).toString(), StaffAuthDTO.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+
+        System.out.println("Add first " + controller.add(mapper.toAuthDto(entity1)));
+        System.out.println("Add second " + controller.add(mapper.toAuthDto(entity2)));
+
+        System.out.println("Read first " + controller.get(added1.getId()));
+
+        System.out.println("Delete Second " + controller.delete(added2.getId()));
+
+        patch.setId(added1.getId());
+        controller.update(patch);
+
+        System.out.println("Update First" + controller.get(added1.getId()));
+
+        System.out.println("Delete First " + controller.delete(added1.getId()));
+
+        System.out.println();
     }
 
 }

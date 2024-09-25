@@ -4,28 +4,29 @@ package org.uhanov.service.impl;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.uhanov.dto.AgeRatingDTO;
 import org.uhanov.dto.mapper.AgeRatingMapper;
 import org.uhanov.exception.EntityNotFoundException;
 import org.uhanov.model.AgeRating;
-import org.uhanov.model.patcher.AgeRatingPatcher;
-import org.uhanov.repository.inMemory.AgeRatingRepositoryMock;
+import org.uhanov.repository.api.AgeRatingRepository;
 import org.uhanov.service.api.AgeRatingService;
 
+import java.util.Optional;
 import java.util.UUID;
 
+@Transactional
 @Service
 @Data
 @RequiredArgsConstructor
 public class AgeRatingServiceImpl implements AgeRatingService {
-    private final AgeRatingRepositoryMock repository;
+    private final AgeRatingRepository repository;
     private final AgeRatingMapper ageRatingMapper;
-    private final AgeRatingPatcher patcher;
 
     @Override
     public AgeRatingDTO create(AgeRatingDTO ageRatingDTO) {
         return ageRatingMapper.toDto(
-                repository.saveEntity(
+                repository.save(
                         ageRatingMapper.toModel(ageRatingDTO)
                 )
         );
@@ -41,17 +42,19 @@ public class AgeRatingServiceImpl implements AgeRatingService {
     @Override
     public void update(AgeRatingDTO ageRatingDTO) {
         AgeRating ageRating = getEntityById(ageRatingDTO.getId());
-        patcher.patchEntity(ageRating, ageRatingDTO);
-        repository.saveEntity(ageRating);
+        ageRatingMapper.updateAgeRating(ageRatingDTO, ageRating);
+        repository.save(ageRating);
     }
 
     @Override
     public boolean delete(UUID uuid) {
-        return repository.removeByUUID(uuid);
+        repository.deleteById(uuid);
+        return true;
     }
 
     private AgeRating getEntityById(UUID uuid) {
-        return repository.getByUUID(uuid)
+        Optional<AgeRating> ageRating = repository.findById(uuid);
+        return ageRating
                 .orElseThrow(EntityNotFoundException::new);
     }
 }
