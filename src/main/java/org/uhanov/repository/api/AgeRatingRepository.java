@@ -1,9 +1,10 @@
 package org.uhanov.repository.api;
 
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.uhanov.model.AgeRating;
 
+import java.util.Optional;
 import java.util.UUID;
 
-public interface AgeRatingRepository extends JpaRepository<AgeRating, UUID> {
+public interface AgeRatingRepository extends CrudRepository<AgeRating> {
+    Optional<AgeRating> findByIdEager(UUID uuid);
 }

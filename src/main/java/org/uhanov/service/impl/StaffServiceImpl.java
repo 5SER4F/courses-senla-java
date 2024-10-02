@@ -55,7 +55,7 @@ public class StaffServiceImpl implements StaffService {
 
         Optional<Staff> staff = repository.findById(uuid);
         return staff.orElseThrow(
-                        EntityNotFoundException::new
-                );
+                EntityNotFoundException::new
+        );
     }
 }

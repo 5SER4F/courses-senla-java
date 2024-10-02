@@ -1,13 +1,11 @@
 package org.uhanov.model;
 
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -16,9 +14,10 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class Staff implements EntityWithUUID {
+public class Staff {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(generator = "uuid-generator")
+    @Column(name = "id", columnDefinition = "UUID")
     private UUID id;
     @Column(name = "password", nullable = false)
     private String password;
@@ -29,5 +28,16 @@ public class Staff implements EntityWithUUID {
     @Column(name = "birth_date", nullable = false)
     private LocalDate birthDate;
     @Column(name = "registration_date", nullable = false)
+    @EqualsAndHashCode.Exclude
     private LocalDateTime registrationDate;
+
+    @OneToMany(mappedBy = "lastChanger")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Set<AgeRating> ageRatingsAddedBy;
+
+    @OneToMany(mappedBy = "lastChanger")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Set<Genre> genresAddedBy;
 }

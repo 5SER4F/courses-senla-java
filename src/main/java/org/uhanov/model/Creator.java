@@ -1,12 +1,10 @@
 package org.uhanov.model;
 
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -15,14 +13,21 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class Creator implements EntityWithUUID {
+public class Creator {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(generator = "uuid-generator")
+    @Column(name = "id", columnDefinition = "UUID")
     private UUID id;
     @Column(name = "password", nullable = false)
     private String password;
     @Column(name = "name", nullable = false)
     private String name;
     @Column(name = "registration_date")
+    @EqualsAndHashCode.Exclude
     private LocalDateTime registrationDate;
+
+    @OneToMany(mappedBy = "creator")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private List<Product> products;
 }

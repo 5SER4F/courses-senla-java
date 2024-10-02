@@ -1,11 +1,8 @@
 package org.uhanov.model;
 
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -16,24 +13,28 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class Purchase implements EntityWithUUID {
+public class Purchase {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(generator = "uuid-generator")
+    @Column(name = "id", columnDefinition = "UUID")
     private UUID id;
-//    @Column(name = "user_id", nullable = false)
-//    private UUID userId;
-    @Column(name = "product_id", nullable = false)
-    private UUID productId;
     @Column(name = "final_cost", nullable = false)
     private BigDecimal cost;
     @Column(name = "purchase_date")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private LocalDateTime purchaseDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", columnDefinition = "uuid NOT NULL")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private User buyer;
 
-
-
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id", columnDefinition = "uuid NOT NULL")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Product product;
 
 }

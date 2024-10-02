@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.uhanov.dto.serializer.LocalDateDeserializer;
 import org.uhanov.dto.serializer.LocalDateTimeDeserializer;
 import org.uhanov.dto.serializer.LocalDateTimeSerializer;
 

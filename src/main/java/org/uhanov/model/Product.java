@@ -1,13 +1,11 @@
 package org.uhanov.model;
 
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+import javax.persistence.*;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -16,18 +14,42 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class Product implements EntityWithUUID {
+public class Product {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(generator = "uuid-generator")
+    @Column(name = "id", columnDefinition = "UUID")
     private UUID id;
-    @Column(name = "creator_id", nullable = false)
-    private UUID creatorId;
     @Column(name = "name", nullable = false)
     private String name;
     @Column(name = "date_added")
-    private LocalDateTime dateAdded;
-    @Column(name = "age_rating_id")
-    private UUID ageRatingId;
+    private LocalDate dateAdded;
     @Column(name = "price", nullable = false)
     private BigDecimal price;
+    @Column(name = "discount")
+    private double discount = 0;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "creator_id")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Creator creator;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "age_rating_id", columnDefinition = "uuid NOT NULL")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private AgeRating ageRating;
+
+
+    @ManyToMany()
+    @JoinTable(
+            name = "product_genre",
+            joinColumns = @JoinColumn(name = "product_id"),
+            inverseJoinColumns = @JoinColumn(name = "genre_id")
+    )
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Set<Genre> genres;
+
+
 }

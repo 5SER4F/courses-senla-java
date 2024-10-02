@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.uhanov.dto.CreatorAuthDTO;
-import org.uhanov.dto.CreatorGetFullDto;
+import org.uhanov.dto.CreatorDto;
 import org.uhanov.dto.mapper.CreatorMapper;
 import org.uhanov.exception.EntityNotFoundException;
 import org.uhanov.model.Creator;
@@ -24,8 +24,8 @@ public class CreatorServiceImpl implements CreatorService {
     private final CreatorMapper creatorMapper;
 
     @Override
-    public CreatorGetFullDto create(CreatorAuthDTO creatorAuthDTO) {
-        return creatorMapper.toFullGETDto(
+    public CreatorDto create(CreatorAuthDTO creatorAuthDTO) {
+        return creatorMapper.toShortDto(
                 repository.save(
                         creatorMapper.postDTOToModel(creatorAuthDTO)
                 )
@@ -33,8 +33,8 @@ public class CreatorServiceImpl implements CreatorService {
     }
 
     @Override
-    public CreatorGetFullDto getById(UUID uuid) {
-        return creatorMapper.toFullGETDto(getEntityById(uuid));
+    public CreatorDto getById(UUID uuid) {
+        return creatorMapper.toShortDto(getEntityById(uuid));
     }
 
     @Override

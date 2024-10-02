@@ -8,9 +8,7 @@ import org.uhanov.dto.PurchaseDTO;
 import org.uhanov.dto.mapper.PurchaseMapper;
 import org.uhanov.exception.EntityNotFoundException;
 import org.uhanov.model.Purchase;
-import org.uhanov.model.patcher.PurchasePatcher;
 import org.uhanov.repository.api.PurchaseRepository;
-import org.uhanov.repository.inMemory.PurchaseRepositoryMock;
 import org.uhanov.service.api.PurchaseService;
 
 import java.util.Optional;

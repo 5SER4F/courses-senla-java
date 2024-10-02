@@ -9,8 +9,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.uhanov.dto.serializer.LocalDateTimeDeserializer;
 import org.uhanov.dto.serializer.LocalDateTimeSerializer;
+import org.uhanov.model.AgeRating;
+import org.uhanov.model.Creator;
+import org.uhanov.model.Genre;
+import org.uhanov.model.Purchase;
 
-import java.time.LocalDateTime;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -24,8 +31,12 @@ public class ProductDTO {
     private String name;
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    private LocalDateTime dateAdded;
+    private LocalDate dateAdded;
     private UUID ageRatingId;
-    private Double price;
+    private BigDecimal price;
 
+    private Creator creators;
+    private AgeRating ageRating;
+    private List<Purchase> purchasesWithProduct;
+    private Set<Genre> genres;
 }

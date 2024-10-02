@@ -1,17 +1,15 @@
 package org.uhanov.service.impl;
 
-import org.springframework.transaction.annotation.Transactional;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.mapstruct.control.MappingControl;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.uhanov.dto.UserAuthDTO;
 import org.uhanov.dto.UserFullDTO;
 import org.uhanov.dto.mapper.UserMapper;
 import org.uhanov.exception.EntityNotFoundException;
 import org.uhanov.exception.MoneyTransferException;
 import org.uhanov.model.User;
-import org.uhanov.model.patcher.UserPatcher;
 import org.uhanov.repository.api.UserRepository;
 import org.uhanov.service.api.UserService;
 
@@ -26,6 +24,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
+    @Transactional
     @Override
     public UserFullDTO create(UserAuthDTO dto) {
         return userMapper.toFullDto(
@@ -35,11 +34,13 @@ public class UserServiceImpl implements UserService {
         );
     }
 
+    @Transactional
     @Override
     public UserFullDTO getById(UUID uuid) {
         return userMapper.toFullDto(get(uuid));
     }
 
+    @Transactional
     @Override
     public void update(UserAuthDTO dto) {
         User user = get(dto.getId());
@@ -47,6 +48,7 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
+    @Transactional
     @Override
     public boolean delete(UUID uuid) {
         userRepository.deleteById(uuid);
@@ -68,6 +70,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Transactional
     private User get(UUID uuid) {
         Optional<User> user = userRepository.findById(uuid);
         return user.orElseThrow(

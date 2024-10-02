@@ -1,9 +1,6 @@
 package org.uhanov.dto.mapper;
 
-import org.mapstruct.BeanMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.*;
 import org.springframework.stereotype.Component;
 import org.uhanov.dto.GenreDTO;
 import org.uhanov.model.Genre;
@@ -11,6 +8,7 @@ import org.uhanov.model.Genre;
 @Mapper(componentModel = "spring")
 @Component
 public interface GenreMapper {
+    @Mapping(target = "productsWithGenre", ignore = true)
     GenreDTO toDto(Genre genre);
 
     Genre toModel(GenreDTO dto);

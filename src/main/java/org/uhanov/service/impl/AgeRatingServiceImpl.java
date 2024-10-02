@@ -25,7 +25,7 @@ public class AgeRatingServiceImpl implements AgeRatingService {
 
     @Override
     public AgeRatingDTO create(AgeRatingDTO ageRatingDTO) {
-        return ageRatingMapper.toDto(
+        return ageRatingMapper.toShortDto(
                 repository.save(
                         ageRatingMapper.toModel(ageRatingDTO)
                 )
@@ -34,7 +34,7 @@ public class AgeRatingServiceImpl implements AgeRatingService {
 
     @Override
     public AgeRatingDTO getById(UUID uuid) {
-        return ageRatingMapper.toDto(
+        return ageRatingMapper.toShortDto(
                 getEntityById(uuid)
         );
     }

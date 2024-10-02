@@ -6,26 +6,18 @@ import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.DatabaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import lombok.RequiredArgsConstructor;
 import org.uhanov.exception.DbConnectionException;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 
-@Component
+@RequiredArgsConstructor
 public class LiquibaseInit {
-    @Value("${db.url}")
-    private String url;
+    private final DataSource dataSource;
+    private final String changeLogs;
 
-    @Value("${db.username}")
-    private String username;
-
-    @Value("${db.password}")
-    private String password;
-    @Value("${db.changeLogFile}")
-    private String changeLogs;
 
     public void updateLiquibase() {
         try (Liquibase liquibase = new Liquibase(changeLogs, new ClassLoaderResourceAccessor(), getDatabase())) {
@@ -45,10 +37,7 @@ public class LiquibaseInit {
 
     private Connection createNewConnection() {
         try {
-            return DriverManager.getConnection(
-                    url,
-                    username,
-                    password);
+            return dataSource.getConnection();
         } catch (SQLException e) {
             e.printStackTrace();
             throw new DbConnectionException();

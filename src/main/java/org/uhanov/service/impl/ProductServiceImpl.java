@@ -8,9 +8,7 @@ import org.uhanov.dto.ProductDTO;
 import org.uhanov.dto.mapper.ProductMapper;
 import org.uhanov.exception.EntityNotFoundException;
 import org.uhanov.model.Product;
-import org.uhanov.model.patcher.ProductPatcher;
 import org.uhanov.repository.api.ProductRepository;
-import org.uhanov.repository.inMemory.ProductRepositoryMock;
 import org.uhanov.service.api.ProductService;
 
 import java.util.Optional;

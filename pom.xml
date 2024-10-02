@@ -21,11 +21,19 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <spring.version>
-            6.1.12
+<!--            6.1.12-->
+<!--            5.3.24-->
+            5.3.39
         </spring.version>
 
         <postgresql.version>42.3.0</postgresql.version>
         <liquibase-core.version>4.5.0</liquibase-core.version>
+        <hibernate.version>
+            5.6.15.Final
+<!--            5.4.10.Final-->
+        </hibernate.version>
+
+        <aspect.version>1.9.19</aspect.version>
 
         <lombok.version>1.18.26</lombok.version>
 
@@ -33,7 +41,7 @@
 
         <jackson.version>2.13.3</jackson.version>
 
-        <mapstruct.version>1.5.5.Final</mapstruct.version>
+        <mapstruct.version>1.5.3.Final</mapstruct.version>
 
         <maven.compiler.release>11</maven.compiler.release>
         <maven.compiler.source>11</maven.compiler.source>
@@ -67,6 +75,11 @@
                                 <artifactId>lombok-mapstruct-binding</artifactId>
                                 <version>0.2.0</version>
                             </path>
+                            <path>
+                                <groupId>org.hibernate</groupId>
+                                <artifactId>hibernate-jpamodelgen</artifactId>
+                                <version>${hibernate.version}</version>
+                            </path>
                         </annotationProcessorPaths>
                     </configuration>
                 </plugin>
@@ -88,6 +101,52 @@
                         </executions>
                     </configuration>
                 </plugin>
+
+<!--                <plugin>-->
+<!--                    <groupId>org.hibernate</groupId>-->
+<!--                    <artifactId>hibernate-jpamodelgen</artifactId>-->
+<!--                    <version>${hibernate.version}</version> &lt;!&ndash; Замените на вашу версию &ndash;&gt;-->
+<!--&lt;!&ndash;                    <scope>provided</scope>&ndash;&gt;-->
+<!--                    <executions>-->
+<!--                        <execution>-->
+<!--&lt;!&ndash;                            <goals>&ndash;&gt;-->
+<!--&lt;!&ndash;                                <goal>generate</goal>&ndash;&gt;-->
+<!--&lt;!&ndash;                            </goals>&ndash;&gt;-->
+<!--                            <configuration>-->
+<!--                                <sourceDirectory>${project.basedir}/src/main/java</sourceDirectory>-->
+<!--                                <outputDirectory>${project.basedir}/target/generated-sources/annotations</outputDirectory>-->
+<!--                            </configuration>-->
+<!--                        </execution>-->
+<!--                    </executions>-->
+<!--                </plugin>-->
+
+                <plugin>
+                <groupId>org.bsc.maven</groupId>
+                <artifactId>maven-processor-plugin</artifactId>
+                <version>2.0.5</version>
+                <executions>
+                    <execution>
+                        <id>process</id>
+                        <goals>
+                            <goal>process</goal>
+                        </goals>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <processors>
+                                <processor>org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor</processor>
+                            </processors>
+                        </configuration>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.hibernate</groupId>
+                        <artifactId>hibernate-jpamodelgen</artifactId>
+                        <version>${hibernate.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
             </plugins>
         </pluginManagement>
     </build>
@@ -130,29 +189,61 @@
             <version>${spring.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${spring.version}</version>
+            <scope>test</scope>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/org.springframework.data/spring-data-jpa -->
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-jpa</artifactId>
-            <version>3.3.3</version>
+            <version>2.6.10</version>
         </dependency>
 
         <dependency>
-            <groupId>org.hibernate.orm</groupId>
+            <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>6.5.2.Final</version>
+            <version>${hibernate.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-jpamodelgen</artifactId>
+            <version>${hibernate.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
+            <version>${hibernate.version}</version>
+        </dependency>
+
+<!--        <dependency>-->
+<!--            <groupId>jakarta.persistence</groupId>-->
+<!--            <artifactId>jakarta.persistence-api</artifactId>-->
+<!--            <version>3.1.0</version>-->
+<!--        </dependency>-->
+
+        <dependency>
+            <groupId>javax.persistence</groupId>
+            <artifactId>javax.persistence-api</artifactId>
+            <version>2.2</version>
         </dependency>
 
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjweaver</artifactId>
-            <version>1.9.22.1</version>
+            <version>${aspect.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjrt</artifactId>
-            <version>1.9.22.1</version>
+            <version>${aspect.version}</version>
         </dependency>
 
         <dependency>
@@ -214,6 +305,26 @@
             <artifactId>lombok-mapstruct-binding</artifactId>
             <version>0.2.0</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.h2database/h2 -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>
+<!--                1.4.197-->
+                2.3.232
+            </version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.2</version>
+            <scope>test</scope>
+        </dependency>
+
 
     </dependencies>
 
