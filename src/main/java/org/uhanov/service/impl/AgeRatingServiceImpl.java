@@ -32,6 +32,7 @@ public class AgeRatingServiceImpl implements AgeRatingService {
         );
     }
 
+    @Transactional(readOnly = true)
     @Override
     public AgeRatingDTO getById(UUID uuid) {
         return ageRatingMapper.toShortDto(

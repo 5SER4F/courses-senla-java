@@ -31,6 +31,7 @@ public class ProductServiceImpl implements ProductService {
         );
     }
 
+    @Transactional(readOnly = true)
     @Override
     public ProductDTO getById(UUID uuid) {
         return productMapper.toDto(getEntityById(uuid));

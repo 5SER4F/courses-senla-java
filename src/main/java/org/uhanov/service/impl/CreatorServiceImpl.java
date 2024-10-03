@@ -32,6 +32,7 @@ public class CreatorServiceImpl implements CreatorService {
         );
     }
 
+    @Transactional(readOnly = true)
     @Override
     public CreatorDto getById(UUID uuid) {
         return creatorMapper.toShortDto(getEntityById(uuid));

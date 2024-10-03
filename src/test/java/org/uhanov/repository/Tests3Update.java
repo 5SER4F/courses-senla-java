@@ -1,5 +1,6 @@
 package org.uhanov.repository;
 
+import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -7,28 +8,22 @@ import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
 import org.uhanov.config.TestConfig;
 import org.uhanov.dto.*;
 import org.uhanov.dto.mapper.*;
+import org.uhanov.model.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
-import static org.uhanov.repository.Tests1SaveTests.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)
-@TestExecutionListeners(
-        listeners = {DirtiesContextTestExecutionListener.class,
-                DependencyInjectionTestExecutionListener.class},
-        mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS)
 @ActiveProfiles("test")
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class Tests3Update {
@@ -56,6 +51,89 @@ public class Tests3Update {
     @Autowired
     PurchaseMapper purchaseMapper;
 
+    User user;
+
+    Staff staff;
+
+    Creator creator;
+
+    Genre genre;
+
+    AgeRating ageRating;
+
+    Product product;
+
+    Purchase purchase;
+
+    @Before
+    @Transactional
+    public void init() {
+        user = User.builder()
+                .password("secret123")
+                .firstname("Alice")
+                .surname("Wonderland")
+                .nickname("WonderAlice")
+                .birthDate(LocalDate.now().minusDays(10))
+                .registrationDate(LocalDateTime.now())
+                .country("Wonderland")
+                .build();
+        user = repo.userRepository.save(user);
+
+        staff = Staff.builder()
+                .password("password123")
+                .firstname("John")
+                .surname("Doe")
+                .birthDate(LocalDate.now().minusDays(10))
+                .registrationDate(LocalDateTime.now())
+                .build();
+
+        staff = repo.staffRepository.save(staff);
+
+        creator = Creator.builder()
+                .password("password1")
+                .name("UserR1")
+                .registrationDate(LocalDateTime.now())
+                .build();
+
+        creator = repo.creatorRepository.save(creator);
+
+        genre = Genre.builder()
+                .name("Genre 1")
+                .lastChanger(staff)
+                .build();
+
+        genre = repo.genreRepository.save(genre);
+
+        ageRating = AgeRating.builder()
+                .name("AgeRating1")
+                .lastChanger(staff)
+                .build();
+
+        ageRating = repo.ageRatingRepository.save(ageRating);
+
+        product = Product.builder()
+                .creator(creator)
+                .name("ProductT 1")
+                .dateAdded(LocalDate.now())
+                .ageRating(ageRating)
+                .price(BigDecimal.valueOf(10.99))
+                .genres(Set.of(genre))
+                .build();
+
+        product = repo.productRepository.save(product);
+
+
+        purchase = Purchase.builder()
+                .buyer(user)
+                .product(product)
+                .cost(BigDecimal.valueOf(15.99))
+                .purchaseDate(LocalDateTime.now().plusDays(100))
+                .build();
+
+        purchase = repo.purchaseRepository.save(purchase);
+
+    }
+
     @Test
     @Transactional
     public void test1whenUpdateUser_thenReturnUpdatedUserAndFindReturnSame() {
@@ -69,11 +147,11 @@ public class Tests3Update {
                 .country("UPDATEDWonderland")
                 .build();
 
-        userMapper.updateUser(patch, addedUser);
-        addedUser = repo.userRepository.update(addedUser);
+        userMapper.updateUser(patch, user);
+        user = repo.userRepository.update(user);
 
-        assertEquals(addedUser,
-                repo.userRepository.findById(addedUser.getId()).get());
+        assertEquals(user,
+                repo.userRepository.findById(user.getId()).get());
     }
 
     @Test
@@ -86,10 +164,10 @@ public class Tests3Update {
                 .registrationDate(LocalDateTime.now())
                 .build();
 
-        staffMapper.updateStaff(patch, addedStaff);
-        addedStaff = repo.staffRepository.update(addedStaff);
-        assertEquals(addedStaff,
-                repo.staffRepository.findById(addedStaff.getId()).get());
+        staffMapper.updateStaff(patch, staff);
+        staff = repo.staffRepository.update(staff);
+        assertEquals(staff,
+                repo.staffRepository.findById(staff.getId()).get());
     }
 
     @Test
@@ -100,26 +178,26 @@ public class Tests3Update {
                 .registrationDate(LocalDateTime.now())
                 .build();
 
-        creatorMapper.updateCreator(patch, addedCreator);
+        creatorMapper.updateCreator(patch, creator);
 
-        addedCreator = repo.creatorRepository.update(addedCreator);
+        creator = repo.creatorRepository.update(creator);
 
-        assertEquals(addedCreator,
-                repo.creatorRepository.findById(addedCreator.getId()).get());
+        assertEquals(creator,
+                repo.creatorRepository.findById(creator.getId()).get());
     }
 
     @Test
     public void test4whenUpdateGenre_thenReturnUpdatedGenreAndFindReturnSame() {
         GenreDTO patch = GenreDTO.builder()
                 .name("UPDATEDGenre 1")
-                .lastChanger(addedStaff)
+                .lastChanger(staff)
                 .build();
-        genreMapper.updateGenre(patch, addedGenre);
+        genreMapper.updateGenre(patch, genre);
 
-        addedGenre = repo.genreRepository.update(addedGenre);
+        genre = repo.genreRepository.update(genre);
 
-        assertEquals(addedGenre,
-                repo.genreRepository.findById(addedGenre.getId()).get());
+        assertEquals(genre,
+                repo.genreRepository.findById(genre.getId()).get());
 
     }
 
@@ -128,15 +206,15 @@ public class Tests3Update {
     public void test5whenUpdateAgeRating_thenReturnUpdatedAgeRatingAndFindReturnSame() {
         AgeRatingDTO patch = AgeRatingDTO.builder()
                 .name("UPDATEDAgeRating1")
-                .lastChanger(addedStaff)
+                .lastChanger(staff)
                 .build();
 
-        ageRatingMapper.updateAgeRating(patch, addedAgeRating);
+        ageRatingMapper.updateAgeRating(patch, ageRating);
 
-        addedAgeRating = repo.ageRatingRepository.update(addedAgeRating);
+        ageRating = repo.ageRatingRepository.update(ageRating);
 
-        assertEquals(addedAgeRating,
-                repo.ageRatingRepository.findById(addedAgeRating.getId()).get());
+        assertEquals(ageRating,
+                repo.ageRatingRepository.findById(ageRating.getId()).get());
     }
 
     @Test
@@ -144,16 +222,16 @@ public class Tests3Update {
         ProductDTO patch = ProductDTO.builder()
                 .name("UPDATEDProduct 1")
                 .dateAdded(LocalDate.now())
-                .ageRating(addedAgeRating)
+                .ageRating(ageRating)
                 .price(BigDecimal.valueOf(999.99))
                 .build();
 
-        productMapper.updateProduct(patch, addedProduct);
+        productMapper.updateProduct(patch, product);
 
-        addedProduct = repo.productRepository.update(addedProduct);
+        product = repo.productRepository.update(product);
 
-        assertEquals(addedProduct,
-                repo.productRepository.findById(addedProduct.getId()).get());
+        assertEquals(product,
+                repo.productRepository.findById(product.getId()).get());
     }
 
     @Test
@@ -163,12 +241,12 @@ public class Tests3Update {
                 .purchaseDate(LocalDateTime.now())
                 .build();
 
-        purchaseMapper.updatePurchase(patch, addedPurchase);
+        purchaseMapper.updatePurchase(patch, purchase);
 
-        addedPurchase = repo.purchaseRepository.update(addedPurchase);
+        purchase = repo.purchaseRepository.update(purchase);
 
-        assertEquals(addedPurchase,
-                repo.purchaseRepository.findById(addedPurchase.getId()).get());
+        assertEquals(purchase,
+                repo.purchaseRepository.findById(purchase.getId()).get());
 
     }
 }

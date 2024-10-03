@@ -5,6 +5,7 @@ import lombok.*;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
 
@@ -31,13 +32,13 @@ public class Staff {
     @EqualsAndHashCode.Exclude
     private LocalDateTime registrationDate;
 
-    @OneToMany(mappedBy = "lastChanger")
+    @OneToMany(mappedBy = "lastChanger", fetch = FetchType.LAZY)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<AgeRating> ageRatingsAddedBy;
 
-    @OneToMany(mappedBy = "lastChanger")
+    @OneToMany(mappedBy = "lastChanger", fetch = FetchType.LAZY)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    private Set<Genre> genresAddedBy;
+    private Collection<Genre> genresAddedBy;
 }

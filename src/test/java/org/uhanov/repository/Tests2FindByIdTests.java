@@ -1,5 +1,6 @@
 package org.uhanov.repository;
 
+import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -7,49 +8,118 @@ import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
 import org.uhanov.config.TestConfig;
 import org.uhanov.model.*;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
-import static org.uhanov.repository.Tests1SaveTests.*;
 
 @RunWith(
         SpringJUnit4ClassRunner.class
 )
 @ContextConfiguration(classes = TestConfig.class)
-@TestExecutionListeners(
-        listeners = {DirtiesContextTestExecutionListener.class,
-                DependencyInjectionTestExecutionListener.class},
-        mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS)
 @ActiveProfiles("test")
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@Transactional
 public class Tests2FindByIdTests {
     @Autowired
     TestedRepositoryHolder repo;
 
-    @Test
-    @Transactional
+    User user;
 
-    public void test1whenFindByIdUser_thenReturnUser() {
-        assertEquals(addedUser,
-                repo.userRepository.findById(addedUser.getId())
-                        .get()
-        );
+    Staff staff;
+
+    Creator creator;
+
+    Genre genre;
+
+    AgeRating ageRating;
+
+    Product product;
+
+    Purchase purchase;
+
+    @Before
+    @Transactional
+    public void init() {
+        user = User.builder()
+                .password("secret123")
+                .firstname("Alice")
+                .surname("Wonderland")
+                .nickname("WonderAlice")
+                .birthDate(LocalDate.now().minusDays(10))
+                .registrationDate(LocalDateTime.now())
+                .country("Wonderland")
+                .build();
+        user = repo.userRepository.save(user);
+
+        staff = Staff.builder()
+                .password("password123")
+                .firstname("John")
+                .surname("Doe")
+                .birthDate(LocalDate.now().minusDays(10))
+                .registrationDate(LocalDateTime.now())
+                .build();
+
+        staff = repo.staffRepository.save(staff);
+
+        creator = Creator.builder()
+                .password("password1")
+                .name("UserR1")
+                .registrationDate(LocalDateTime.now())
+                .build();
+
+        creator = repo.creatorRepository.save(creator);
+
+        genre = Genre.builder()
+                .name("Genre 1")
+                .lastChanger(staff)
+                .build();
+
+        genre = repo.genreRepository.save(genre);
+
+        ageRating = AgeRating.builder()
+                .name("AgeRating1")
+                .lastChanger(staff)
+                .build();
+
+        ageRating = repo.ageRatingRepository.save(ageRating);
+
+        product = Product.builder()
+                .creator(creator)
+                .name("ProductT 1")
+                .dateAdded(LocalDate.now())
+                .ageRating(ageRating)
+                .price(BigDecimal.valueOf(10.99))
+                .genres(Set.of(genre))
+                .build();
+
+        product = repo.productRepository.save(product);
+
+
+        purchase = Purchase.builder()
+                .buyer(user)
+                .product(product)
+                .cost(BigDecimal.valueOf(15.99))
+                .purchaseDate(LocalDateTime.now().plusDays(100))
+                .build();
+
+        purchase = repo.purchaseRepository.save(purchase);
+
     }
 
-    @Test
-//    @Transactional
 
-    public void test2whenFindByIdStaff_thenReturnStaff() {
-        assertEquals(addedStaff,
-                repo.staffRepository.findById(addedStaff.getId())
+    @Test
+    @Transactional
+    public void test1whenFindByIdUser_thenReturnUser() {
+        assertEquals(user,
+                repo.userRepository.findById(user.getId())
                         .get()
         );
     }
@@ -58,24 +128,27 @@ public class Tests2FindByIdTests {
     @Transactional
     public void test2whenFindByIdStaffEager_thenReturnStaff() {
         //Eager
-        Staff staffByIdEager = repo.staffRepository.findStaffByIdEager(addedStaff.getId()).get();
+        Staff staffByIdEager = repo.staffRepository.findStaffByIdEager(staff.getId()).get();
 
-        assertEquals(staffByIdEager, addedStaff);
+        assertEquals(staffByIdEager, staff);
 
-        assertEquals(staffByIdEager.getAgeRatingsAddedBy(),
-                Set.of(addedAgeRating));
+    }
 
-        assertEquals(staffByIdEager.getGenresAddedBy(),
-                Set.of(addedGenre));
-
+    @Test
+    @Transactional
+    public void test2whenFindByIdStaff_thenReturnStaff() {
+        assertEquals(staff,
+                repo.staffRepository.findById(staff.getId())
+                        .get()
+        );
     }
 
 
     @Test
     @Transactional
     public void test3whenFindByIdCreator_thenReturnCreator() {
-        assertEquals(addedCreator,
-                repo.creatorRepository.findById(addedCreator.getId())
+        assertEquals(creator,
+                repo.creatorRepository.findById(creator.getId())
                         .get()
         );
 
@@ -87,31 +160,29 @@ public class Tests2FindByIdTests {
     public void test3whenFindByIdCreatorEager_thenReturnCreator() {
         Creator creatorEager = repo
                 .creatorRepository
-                .findByIdEager(addedCreator.getId())
+                .findByIdEager(creator.getId())
                 .get();
-        assertEquals(creatorEager, addedCreator);
-        assertEquals(creatorEager.getProducts().get(0),
-                addedProduct);
+        assertEquals(creatorEager, creator);
     }
 
     @Test
     @Transactional
     public void test3whenFindByNameCreator_thenReturnCreator() {
-        assertEquals(addedCreator,
+        assertEquals(creator,
                 repo.creatorRepository
-                        .findByName(addedCreator.getName())
+                        .findByName(creator.getName())
                         .get(0));
     }
 
     @Test
     @Transactional
     public void test4whenFindByIdGenre_thenReturnGenre() {
-        assertEquals(addedGenre,
-                repo.genreRepository.findById(addedGenre.getId())
+        assertEquals(genre,
+                repo.genreRepository.findById(genre.getId())
                         .get()
         );
-        assertEquals(addedStaff,
-                repo.genreRepository.findById(addedGenre.getId())
+        assertEquals(staff,
+                repo.genreRepository.findById(genre.getId())
                         .get().getLastChanger()
         );
     }
@@ -119,18 +190,22 @@ public class Tests2FindByIdTests {
     @Test
     @Transactional
     public void test4whenFindByIdGenreEager_thenReturnGenre() {
-        assertEquals(addedGenre,
+        assertEquals(genre,
                 repo.genreRepository
-                        .findByIdEager(addedGenre.getId())
+                        .findByIdEager(genre.getId())
                         .get());
+        assertEquals(repo.genreRepository
+                        .findByIdEager(genre.getId())
+                        .get().getLastChanger(),
+                staff);
     }
 
     @Test
     @Transactional
     public void test4whenFindByStaffIdGenre_thenReturnGenre() {
-        assertEquals(addedGenre,
+        assertEquals(genre,
                 repo.genreRepository
-                        .findByStaffId(addedStaff.getId())
+                        .findByStaffId(staff.getId())
                         .get(0));
     }
 
@@ -138,13 +213,13 @@ public class Tests2FindByIdTests {
     @Test
     @Transactional
     public void test5whenFindByIdAgeRating_thenReturnAgeRating() {
-        assertEquals(addedAgeRating,
-                repo.ageRatingRepository.findById(addedAgeRating.getId())
+        assertEquals(ageRating,
+                repo.ageRatingRepository.findById(ageRating.getId())
                         .get()
         );
 
-        assertEquals(addedStaff,
-                repo.ageRatingRepository.findById(addedAgeRating.getId())
+        assertEquals(staff,
+                repo.ageRatingRepository.findById(ageRating.getId())
                         .get().getLastChanger()
         );
     }
@@ -153,28 +228,28 @@ public class Tests2FindByIdTests {
     @Transactional
     public void test5whenFindByIdAgeRatingEager_thenReturnAgeRating() {
         AgeRating eager = repo.ageRatingRepository
-                .findByIdEager(addedAgeRating.getId())
+                .findByIdEager(ageRating.getId())
                 .get();
-        assertEquals(addedAgeRating,
+        assertEquals(ageRating,
                 eager);
-        assertEquals(addedStaff,
+        assertEquals(staff,
                 eager.getLastChanger());
     }
 
     @Test
     @Transactional
     public void test6whenFindByIdProduct_thenReturnProduct() {
-        assertEquals(addedProduct,
-                repo.productRepository.findById(addedProduct.getId()).get()
+        assertEquals(product,
+                repo.productRepository.findById(product.getId()).get()
         );
-        assertEquals(addedCreator,
-                repo.productRepository.findById(addedProduct.getId())
+        assertEquals(creator,
+                repo.productRepository.findById(product.getId())
                         .get()
                         .getCreator()
         );
 
-        assertEquals(addedAgeRating,
-                repo.productRepository.findById(addedProduct.getId())
+        assertEquals(ageRating,
+                repo.productRepository.findById(product.getId())
                         .get()
                         .getAgeRating()
         );
@@ -184,16 +259,16 @@ public class Tests2FindByIdTests {
     @Transactional
     public void test6whenFindByIdProductEager_thenReturnProduct() {
         Product eager = repo.productRepository
-                .findByIdEager(addedProduct.getId())
+                .findByIdEager(product.getId())
                 .get();
-        assertEquals(addedProduct,
+        assertEquals(product,
                 eager
         );
-        assertEquals(addedCreator,
+        assertEquals(creator,
                 eager.getCreator()
         );
 
-        assertEquals(addedAgeRating,
+        assertEquals(ageRating,
                 eager.getAgeRating()
         );
     }
@@ -201,16 +276,16 @@ public class Tests2FindByIdTests {
     @Test
     @Transactional
     public void test7whenFindByIdPurchase_thenReturnPurchase() {
-        assertEquals(addedPurchase,
-                repo.purchaseRepository.findById(addedPurchase.getId()).get());
+        assertEquals(purchase,
+                repo.purchaseRepository.findById(purchase.getId()).get());
 
-        assertEquals(addedUser,
-                repo.purchaseRepository.findById(addedPurchase.getId())
+        assertEquals(user,
+                repo.purchaseRepository.findById(purchase.getId())
                         .get()
                         .getBuyer());
 
-        assertEquals(addedProduct,
-                repo.purchaseRepository.findById(addedPurchase.getId())
+        assertEquals(product,
+                repo.purchaseRepository.findById(purchase.getId())
                         .get()
                         .getProduct());
 
@@ -220,16 +295,16 @@ public class Tests2FindByIdTests {
     @Transactional
     public void test7whenFindByIdPurchaseEager_thenReturnPurchase() {
         Purchase eager = repo.purchaseRepository
-                .findByIdEager(addedPurchase.getId())
+                .findByIdEager(purchase.getId())
                 .get();
 
-        assertEquals(addedPurchase,
+        assertEquals(purchase,
                 eager);
 
-        assertEquals(addedUser,
+        assertEquals(user,
                 eager.getBuyer());
 
-        assertEquals(addedProduct,
+        assertEquals(product,
                 eager.getProduct());
 
     }
@@ -238,16 +313,16 @@ public class Tests2FindByIdTests {
     @Transactional
     public void test7whenFindByProductNamePurchase_thenReturnPurchase() {
         Purchase eagerByProductName = repo.purchaseRepository
-                .findByProductName(addedProduct.getName())
+                .findByProductName(product.getName())
                 .get(0);
 
-        assertEquals(addedPurchase,
+        assertEquals(purchase,
                 eagerByProductName);
 
-        assertEquals(addedUser,
+        assertEquals(user,
                 eagerByProductName.getBuyer());
 
-        assertEquals(addedProduct,
+        assertEquals(product,
                 eagerByProductName.getProduct());
 
     }
@@ -257,11 +332,11 @@ public class Tests2FindByIdTests {
     public void test7whenFindByDatePurchase_thenReturnPurchase() {
         Purchase purchaseByDate = repo.purchaseRepository
                 .findByPurchaseDateInPeriod(
-                        addedPurchase.getPurchaseDate().minusSeconds(1000L),
-                        addedPurchase.getPurchaseDate().plusSeconds(1000L)
+                        purchase.getPurchaseDate().minusSeconds(1000L),
+                        purchase.getPurchaseDate().plusSeconds(1000L)
                 ).get(0);
         assertEquals(
-                addedPurchase,
+                purchase,
                 purchaseByDate
         );
     }

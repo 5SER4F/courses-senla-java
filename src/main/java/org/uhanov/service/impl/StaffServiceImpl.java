@@ -32,6 +32,7 @@ public class StaffServiceImpl implements StaffService {
         );
     }
 
+    @Transactional(readOnly = true)
     @Override
     public StaffFullDTO getById(UUID uuid) {
         return staffMapper.toFullDTO(getEntityById(uuid));

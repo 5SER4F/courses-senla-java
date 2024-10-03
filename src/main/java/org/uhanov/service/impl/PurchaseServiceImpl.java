@@ -31,6 +31,7 @@ public class PurchaseServiceImpl implements PurchaseService {
         );
     }
 
+    @Transactional(readOnly = true)
     @Override
     public PurchaseDTO getById(UUID uuid) {
         return purchaseMapper.toDto(getEntityById(uuid));
@@ -40,7 +41,6 @@ public class PurchaseServiceImpl implements PurchaseService {
     public void update(PurchaseDTO dto) {
         Purchase purchase = getEntityById(dto.getId());
         purchaseMapper.updatePurchase(dto, purchase);
-//        repository.saveEntity(purchase);
     }
 
     @Override

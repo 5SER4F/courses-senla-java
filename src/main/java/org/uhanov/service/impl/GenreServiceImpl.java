@@ -31,6 +31,7 @@ public class GenreServiceImpl implements GenreService {
         );
     }
 
+    @Transactional(readOnly = true)
     @Override
     public GenreDTO getById(UUID uuid) {
         return genreMapper.toDto(getEntityById(uuid));

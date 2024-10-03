@@ -30,7 +30,7 @@ public class GenreDao extends AbstractDao<UUID, Genre> {
 
     public Optional<Genre> findByIdEager(UUID uuid) {
         EntityGraph<Genre> entityGraph = entityManager.createEntityGraph(getEntityClass());
-
+        entityGraph.addSubgraph(Genre_.LAST_CHANGER);
         return Optional.ofNullable(
                 entityManager.find(
                         getEntityClass(),

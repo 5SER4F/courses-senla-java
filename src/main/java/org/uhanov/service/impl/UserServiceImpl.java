@@ -34,7 +34,7 @@ public class UserServiceImpl implements UserService {
         );
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public UserFullDTO getById(UUID uuid) {
         return userMapper.toFullDto(get(uuid));
@@ -70,7 +70,6 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    @Transactional
     private User get(UUID uuid) {
         Optional<User> user = userRepository.findById(uuid);
         return user.orElseThrow(

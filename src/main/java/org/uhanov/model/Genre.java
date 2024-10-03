@@ -20,7 +20,7 @@ public class Genre {
     private String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "add_by", columnDefinition = "uuid NOT NULL")
+    @JoinColumn(name = "add_by", columnDefinition = "uuid NOT NULL", referencedColumnName = "id")
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Staff lastChanger;
