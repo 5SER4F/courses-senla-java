@@ -3,6 +3,6 @@ CREATE TABLE IF NOT EXISTS staff (
   password varchar NOT NULL,
   firstname varchar NOT NULL,
   surname varchar NOT NULL,
-  birth_date timestamp NOT NULL,
+  birth_date date NOT NULL,
   registration_date timestamp NOT NULL
 );

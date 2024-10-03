@@ -1,19 +1,28 @@
 package org.uhanov.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+import javax.persistence.*;
 import java.util.UUID;
 
+@Entity
+@Table(name = "genre")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class Genre implements EntityWithUUID {
+public class Genre {
+    @Id
+    @GeneratedValue(generator = "uuid-generator")
+    @Column(name = "id", columnDefinition = "UUID")
     private UUID id;
+    @Column(name = "name", nullable = false)
     private String name;
-    private UUID lastChanger;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "add_by", columnDefinition = "uuid NOT NULL", referencedColumnName = "id")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Staff lastChanger;
 
 }

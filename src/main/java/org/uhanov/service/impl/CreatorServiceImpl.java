@@ -3,53 +3,57 @@ package org.uhanov.service.impl;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.uhanov.dto.CreatorAuthDTO;
-import org.uhanov.dto.CreatorGetFullDto;
+import org.uhanov.dto.CreatorDto;
 import org.uhanov.dto.mapper.CreatorMapper;
 import org.uhanov.exception.EntityNotFoundException;
 import org.uhanov.model.Creator;
-import org.uhanov.model.patcher.CreatorNewPatcher;
-import org.uhanov.repository.inMemory.CreatorRepositoryMock;
+import org.uhanov.repository.api.CreatorRepository;
 import org.uhanov.service.api.CreatorService;
 
+import java.util.Optional;
 import java.util.UUID;
 
+@Transactional
 @Service
 @Data
 @RequiredArgsConstructor
 public class CreatorServiceImpl implements CreatorService {
-    private final CreatorRepositoryMock repository;
+    private final CreatorRepository repository;
     private final CreatorMapper creatorMapper;
-    private final CreatorNewPatcher patcher;
 
     @Override
-    public CreatorGetFullDto create(CreatorAuthDTO creatorAuthDTO) {
-        return creatorMapper.toFullGETDto(
-                repository.saveEntity(
+    public CreatorDto create(CreatorAuthDTO creatorAuthDTO) {
+        return creatorMapper.toShortDto(
+                repository.save(
                         creatorMapper.postDTOToModel(creatorAuthDTO)
                 )
         );
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public CreatorGetFullDto getById(UUID uuid) {
-        return creatorMapper.toFullGETDto(getEntityById(uuid));
+    public CreatorDto getById(UUID uuid) {
+        return creatorMapper.toShortDto(getEntityById(uuid));
     }
 
     @Override
     public void update(CreatorAuthDTO creatorAuthDTO) {
         Creator creator = getEntityById(creatorAuthDTO.getId());
-        patcher.patchEntity(creator, creatorAuthDTO);
-        repository.saveEntity(creator);
+        creatorMapper.updateCreator(creatorAuthDTO, creator);
+        repository.save(creator);
     }
 
     @Override
     public boolean delete(UUID uuid) {
-        return repository.removeByUUID(uuid);
+        repository.deleteById(uuid);
+        return true;
     }
 
     private Creator getEntityById(UUID uuid) {
-        return repository.getByUUID(uuid)
+        Optional<Creator> creator = repository.findById(uuid);
+        return creator
                 .orElseThrow(EntityNotFoundException::new);
     }
 }
