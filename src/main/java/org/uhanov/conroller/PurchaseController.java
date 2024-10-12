@@ -1,47 +1,46 @@
 package org.uhanov.conroller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
-import org.uhanov.dto.PurchaseDTO;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.uhanov.dto.purchase.PurchaseDto;
+import org.uhanov.dto.purchase.PurchasePostDto;
 import org.uhanov.service.api.PurchaseService;
 
+import javax.validation.Valid;
 import java.util.UUID;
 
-@Controller
-@Data
+@RestController
+@RequestMapping(path = "/purchases")
 @RequiredArgsConstructor
 public class PurchaseController {
     private final PurchaseService service;
-    private final ObjectMapper objectMapper;
 
+    @PostMapping("")
+    public ResponseEntity<PurchaseDto> create(
+            @RequestBody @Valid PurchasePostDto dto
+    ) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(service.create(dto));
+    }
 
-    public Object add(PurchaseDTO dto) {
-        return writeAsString(service.create(dto));
+    @DeleteMapping("/{purchaseId}")
+    public ResponseEntity delete(
+            @PathVariable("purchaseId") UUID purchaseId
+    ) {
+        service.delete(purchaseId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .build();
     }
 
 
-    public void update(PurchaseDTO dto) {
-        service.update(dto);
+    @GetMapping("/{purchaseId}")
+    public ResponseEntity<PurchaseDto> get(
+            @PathVariable("purchaseId") UUID purchaseId
+    ) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(service.getById(purchaseId));
     }
 
-
-    public Object delete(UUID uuid) {
-        return service.delete(uuid) ? "200 OK" : "404 not found";
-    }
-
-
-    public Object get(UUID uuid) {
-        return writeAsString(service.getById(uuid));
-    }
-
-    private String writeAsString(Object o) {
-        try {
-            return objectMapper.writeValueAsString(o);
-        } catch (JsonProcessingException e) {
-            return "500 Internal Server Error";
-        }
-    }
 }

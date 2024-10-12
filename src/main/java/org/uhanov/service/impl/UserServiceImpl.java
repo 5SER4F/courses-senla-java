@@ -1,14 +1,14 @@
 package org.uhanov.service.impl;
 
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.uhanov.dto.UserAuthDTO;
-import org.uhanov.dto.UserFullDTO;
 import org.uhanov.dto.mapper.UserMapper;
-import org.uhanov.exception.EntityNotFoundException;
+import org.uhanov.dto.user.MoneyTransferDto;
+import org.uhanov.dto.user.UserAuthDto;
+import org.uhanov.dto.user.UserFullDto;
 import org.uhanov.exception.MoneyTransferException;
+import org.uhanov.exception.ResourceNotFoundException;
 import org.uhanov.model.User;
 import org.uhanov.repository.api.UserRepository;
 import org.uhanov.service.api.UserService;
@@ -18,7 +18,6 @@ import java.util.UUID;
 
 @Transactional
 @Service
-@Data
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
@@ -26,7 +25,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public UserFullDTO create(UserAuthDTO dto) {
+    public UserFullDto create(UserAuthDto dto) {
         return userMapper.toFullDto(
                 userRepository.save(
                         userMapper.authToModel(dto)
@@ -36,32 +35,31 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(readOnly = true)
     @Override
-    public UserFullDTO getById(UUID uuid) {
+    public UserFullDto getById(UUID uuid) {
         return userMapper.toFullDto(get(uuid));
     }
 
     @Transactional
     @Override
-    public void update(UserAuthDTO dto) {
+    public void update(UserAuthDto dto) {
         User user = get(dto.getId());
         userMapper.updateUser(dto, user);
-        userRepository.save(user);
+        userRepository.update(user);
     }
 
     @Transactional
     @Override
-    public boolean delete(UUID uuid) {
+    public void delete(UUID uuid) {
         userRepository.deleteById(uuid);
-        return true;
     }
 
     @Transactional
     @Override
-    public void moneyTransfer(UUID senderId, UUID recipientId, double amount) {
+    public void moneyTransfer(UUID senderId, MoneyTransferDto moneyTransferDto) {
         User sender = get(senderId);
-        User recipient = get(recipientId);
-        sender.changeBalance(-amount);
-        recipient.changeBalance(amount);
+        User recipient = get(moneyTransferDto.getRecipientId());
+        sender.changeBalance(-moneyTransferDto.getAmount());
+        recipient.changeBalance(moneyTransferDto.getAmount());
         userRepository.save(sender);
         userRepository.save(recipient);
         if (sender.getBalance() < 0) {
@@ -73,7 +71,7 @@ public class UserServiceImpl implements UserService {
     private User get(UUID uuid) {
         Optional<User> user = userRepository.findById(uuid);
         return user.orElseThrow(
-                EntityNotFoundException::new
+                ResourceNotFoundException::new
         );
     }
 }

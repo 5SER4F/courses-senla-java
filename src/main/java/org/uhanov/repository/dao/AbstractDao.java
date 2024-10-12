@@ -2,9 +2,9 @@ package org.uhanov.repository.dao;
 
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import org.uhanov.exception.ResourceNotFoundException;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceContext;
 import java.io.Serializable;
 import java.util.Optional;
@@ -36,7 +36,7 @@ public abstract class AbstractDao<PK extends Serializable, T> {
 
     public void deleteById(PK id) {
         T entity = findById(id).orElseThrow(
-                EntityNotFoundException::new
+                ResourceNotFoundException::new
         );
         if (entity != null) {
             delete(entity);

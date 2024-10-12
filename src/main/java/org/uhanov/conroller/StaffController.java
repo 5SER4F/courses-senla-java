@@ -1,47 +1,60 @@
 package org.uhanov.conroller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
-import org.uhanov.dto.StaffAuthDTO;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.uhanov.dto.staff.StaffAuthDto;
+import org.uhanov.dto.staff.StaffFullDto;
 import org.uhanov.service.api.StaffService;
 
 import java.util.UUID;
 
-@Controller
-@Data
+@RestController
+@RequestMapping(path = "/staff")
 @RequiredArgsConstructor
 public class StaffController {
     private final StaffService service;
     private final ObjectMapper objectMapper;
 
 
-    public Object add(StaffAuthDTO dto) {
-        return writeAsString(service.create(dto));
+    @PostMapping("")
+    public ResponseEntity<StaffFullDto> create(
+            @RequestBody StaffAuthDto dto
+    ) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(service.create(dto));
     }
 
 
-    public void update(StaffAuthDTO dto) {
+    @PatchMapping("/{staffId}")
+    public ResponseEntity update(
+            @PathVariable("staffId") UUID staffId,
+            @RequestBody StaffAuthDto dto
+    ) {
+        dto.setId(staffId);
         service.update(dto);
+        return ResponseEntity.status(HttpStatus.OK)
+                .build();
     }
 
 
-    public Object delete(UUID uuid) {
-        return service.delete(uuid) ? "200 OK" : "404 not found";
+    @DeleteMapping("/{staffId}")
+    public ResponseEntity delete(
+            @PathVariable("staffId") UUID staffId
+    ) {
+        service.delete(staffId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .build();
     }
 
-
-    public Object get(UUID uuid) {
-        return writeAsString(service.getById(uuid));
+    @GetMapping("/{staffId}")
+    public ResponseEntity<StaffFullDto> get(
+            @PathVariable("staffId") UUID staffId
+    ) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(service.getById(staffId));
     }
 
-    private String writeAsString(Object o) {
-        try {
-            return objectMapper.writeValueAsString(o);
-        } catch (JsonProcessingException e) {
-            return "500 Internal Server Error";
-        }
-    }
 }

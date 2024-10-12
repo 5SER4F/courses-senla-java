@@ -44,4 +44,14 @@ public class GenreRepositoryImpl implements GenreRepository {
     public Optional<Genre> findByIdEager(UUID uuid) {
         return genreDao.findByIdEager(uuid);
     }
+
+    @Override
+    public List<Genre> findGenresByProductId(UUID productId) {
+        return genreDao.findGenresByProductId(productId);
+    }
+
+    @Override
+    public List<Genre> getGenresByIds(List<UUID> genreIds) {
+        return genreDao.getGenresByIds(genreIds);
+    }
 }

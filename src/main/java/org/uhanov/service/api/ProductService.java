@@ -1,19 +1,20 @@
 package org.uhanov.service.api;
 
-import org.uhanov.dto.ProductDTO;
+import org.uhanov.dto.product.ProductDto;
+import org.uhanov.dto.product.ProductPostDto;
 
 import java.util.UUID;
 
 public interface ProductService {
 
 
-    ProductDTO create(ProductDTO dto);
+    ProductDto create(ProductPostDto dto);
 
 
-    ProductDTO getById(UUID uuid);
+    ProductDto getById(UUID uuid);
 
-    void update(ProductDTO dto);
+    void update(ProductPostDto dto);
 
 
-    boolean delete(UUID uuid);
+    void delete(UUID uuid);
 }

@@ -4,11 +4,14 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.uhanov.dto.GenreDTO;
+import org.uhanov.dto.genre.GenreDto;
+import org.uhanov.dto.genre.GenrePostDto;
 import org.uhanov.dto.mapper.GenreMapper;
-import org.uhanov.exception.EntityNotFoundException;
+import org.uhanov.exception.ResourceNotFoundException;
 import org.uhanov.model.Genre;
+import org.uhanov.model.Staff;
 import org.uhanov.repository.api.GenreRepository;
+import org.uhanov.repository.api.StaffRepository;
 import org.uhanov.service.api.GenreService;
 
 import java.util.Optional;
@@ -20,39 +23,52 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class GenreServiceImpl implements GenreService {
     private final GenreRepository repository;
+    private final StaffRepository staffRepository;
     private final GenreMapper genreMapper;
 
+    @Transactional
     @Override
-    public GenreDTO create(GenreDTO genreDTO) {
+    public GenreDto create(GenrePostDto genreDto) {
+        Staff creator = staffRepository.findById(genreDto.getLastChangerId())
+                .orElseThrow(ResourceNotFoundException::new);
+        Genre newGenre = genreMapper.toModel(genreDto);
+        newGenre.setLastChanger(creator);
         return genreMapper.toDto(
-                repository.save(
-                        genreMapper.toModel(genreDTO)
-                )
+                repository.save(newGenre)
         );
     }
 
     @Transactional(readOnly = true)
     @Override
-    public GenreDTO getById(UUID uuid) {
-        return genreMapper.toDto(getEntityById(uuid));
+    public GenreDto getById(UUID uuid) {
+        return genreMapper.toDto(
+                getEntityById(uuid)
+        );
     }
 
+    @Transactional
     @Override
-    public void update(GenreDTO genreDTO) {
-        Genre genre = getEntityById(genreDTO.getId());
-        genreMapper.updateGenre(genreDTO, genre);
-        repository.save(genre);
+    public void update(GenrePostDto genreDto) {
+        Genre genre = getEntityById(genreDto.getId());
+        genreMapper.updateGenre(genreDto, genre);
+        if (genreDto.getLastChangerId() != null) {
+            genre.setLastChanger(
+                    staffRepository.findById(genreDto.getLastChangerId())
+                            .orElseThrow(ResourceNotFoundException::new)
+            );
+        }
+        repository.update(genre);
     }
 
+    @Transactional
     @Override
-    public boolean delete(UUID uuid) {
-        getRepository().deleteById(uuid);
-        return false;
+    public void delete(UUID uuid) {
+        repository.deleteById(uuid);
     }
 
     private Genre getEntityById(UUID uuid) {
         Optional<Genre> genre = repository.findById(uuid);
         return genre
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(ResourceNotFoundException::new);
     }
 }

@@ -1,19 +1,20 @@
 package org.uhanov.service.api;
 
-import org.uhanov.dto.AgeRatingDTO;
+import org.uhanov.dto.agerating.AgeRatingDto;
+import org.uhanov.dto.agerating.AgeRatingPostDto;
 
 import java.util.UUID;
 
 public interface AgeRatingService {
 
-    AgeRatingDTO create(AgeRatingDTO ageRatingDTO);
+    AgeRatingDto create(AgeRatingPostDto ageRatingDto);
 
 
-    AgeRatingDTO getById(UUID uuid);
+    AgeRatingDto getById(UUID uuid);
 
 
-    void update(AgeRatingDTO ageRatingDTO);
+    void update(AgeRatingPostDto ageRatingDto);
 
 
-    boolean delete(UUID uuid);
+    void delete(UUID uuid);
 }

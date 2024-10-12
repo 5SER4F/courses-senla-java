@@ -18,7 +18,6 @@ import java.util.Properties;
 
 @Configuration
 @EnableAspectJAutoProxy
-//@EnableJpaRepositories(basePackages = "org.uhanov")
 @EnableTransactionManagement
 @ComponentScan("org.uhanov")
 @Profile("default")

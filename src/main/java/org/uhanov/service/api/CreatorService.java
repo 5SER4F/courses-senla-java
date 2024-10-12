@@ -1,17 +1,17 @@
 package org.uhanov.service.api;
 
-import org.uhanov.dto.CreatorAuthDTO;
-import org.uhanov.dto.CreatorDto;
+import org.uhanov.dto.creator.CreatorAuthDto;
+import org.uhanov.dto.creator.CreatorDto;
 
 import java.util.UUID;
 
 public interface CreatorService {
-    CreatorDto create(CreatorAuthDTO creatorAuthDTO);
+    CreatorDto create(CreatorAuthDto creatorAuthDto);
 
     CreatorDto getById(UUID uuid);
 
-    void update(CreatorAuthDTO creatorAuthDTO);
+    void update(CreatorAuthDto creatorAuthDto);
 
-    boolean delete(UUID uuid);
+    void delete(UUID uuid);
 
 }

@@ -5,11 +5,14 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.uhanov.dto.AgeRatingDTO;
+import org.uhanov.dto.agerating.AgeRatingDto;
+import org.uhanov.dto.agerating.AgeRatingPostDto;
 import org.uhanov.dto.mapper.AgeRatingMapper;
-import org.uhanov.exception.EntityNotFoundException;
+import org.uhanov.exception.ResourceNotFoundException;
 import org.uhanov.model.AgeRating;
+import org.uhanov.model.Staff;
 import org.uhanov.repository.api.AgeRatingRepository;
+import org.uhanov.repository.api.StaffRepository;
 import org.uhanov.service.api.AgeRatingService;
 
 import java.util.Optional;
@@ -21,41 +24,52 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AgeRatingServiceImpl implements AgeRatingService {
     private final AgeRatingRepository repository;
+    private final StaffRepository staffRepository;
     private final AgeRatingMapper ageRatingMapper;
 
+    @Transactional
     @Override
-    public AgeRatingDTO create(AgeRatingDTO ageRatingDTO) {
-        return ageRatingMapper.toShortDto(
-                repository.save(
-                        ageRatingMapper.toModel(ageRatingDTO)
-                )
+    public AgeRatingDto create(AgeRatingPostDto ageRatingDto) {
+        Staff creator = staffRepository.findById(ageRatingDto.getLastChangerId())
+                .orElseThrow(ResourceNotFoundException::new);
+        AgeRating newAgeRating = ageRatingMapper.postDtoToModel(ageRatingDto);
+        newAgeRating.setLastChanger(creator);
+        return ageRatingMapper.toDto(
+                repository.save(newAgeRating)
         );
     }
 
     @Transactional(readOnly = true)
     @Override
-    public AgeRatingDTO getById(UUID uuid) {
-        return ageRatingMapper.toShortDto(
-                getEntityById(uuid)
+    public AgeRatingDto getById(UUID uuid) {
+        return ageRatingMapper.toDto(
+                get(uuid)
         );
     }
 
+    @Transactional
     @Override
-    public void update(AgeRatingDTO ageRatingDTO) {
-        AgeRating ageRating = getEntityById(ageRatingDTO.getId());
-        ageRatingMapper.updateAgeRating(ageRatingDTO, ageRating);
-        repository.save(ageRating);
+    public void update(AgeRatingPostDto ageRatingDto) {
+        AgeRating ageRating = get(ageRatingDto.getId());
+        ageRatingMapper.updateAgeRating(ageRatingDto, ageRating);
+        if (ageRatingDto.getLastChangerId() != null) {
+            ageRating.setLastChanger(
+                    staffRepository.findById(ageRatingDto.getLastChangerId())
+                            .orElseThrow(ResourceNotFoundException::new)
+            );
+        }
+        repository.update(ageRating);
     }
 
+    @Transactional
     @Override
-    public boolean delete(UUID uuid) {
+    public void delete(UUID uuid) {
         repository.deleteById(uuid);
-        return true;
     }
 
-    private AgeRating getEntityById(UUID uuid) {
+    private AgeRating get(UUID uuid) {
         Optional<AgeRating> ageRating = repository.findById(uuid);
         return ageRating
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(ResourceNotFoundException::new);
     }
 }

@@ -10,4 +10,8 @@ public interface GenreRepository extends CrudRepository<Genre> {
     List<Genre> findByStaffId(UUID uuid);
 
     Optional<Genre> findByIdEager(UUID uuid);
+
+    List<Genre> findGenresByProductId(UUID productId);
+
+    List<Genre> getGenresByIds(List<UUID> genreIds);
 }
