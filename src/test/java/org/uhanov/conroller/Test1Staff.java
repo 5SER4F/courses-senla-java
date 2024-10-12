@@ -36,7 +36,7 @@ public class Test1Staff {
     public ObjectMapper objectMapper;
     public static MockMvc mvc;
 
-    public static StaffFullDto addedStaff;
+    private static StaffFullDto addedStaff;
 
     public static final String PATH_PREFIX = "/staff";
 

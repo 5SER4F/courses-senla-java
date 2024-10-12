@@ -16,11 +16,16 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.uhanov.WebAppInitializerTestConfig;
+import org.uhanov.dto.agerating.AgeRatingDto;
 import org.uhanov.dto.genre.GenreDto;
 import org.uhanov.dto.genre.GenrePostDto;
+import org.uhanov.dto.staff.StaffAuthDto;
+import org.uhanov.dto.staff.StaffFullDto;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.uhanov.conroller.Test1Staff.addedStaff;
 
 @ExtendWith(SpringExtension.class)
 @SpringJUnitWebConfig(value = WebAppInitializerTestConfig.class)
@@ -33,7 +38,9 @@ public class Test5Genres {
     public ObjectMapper objectMapper;
     public static MockMvc mvc;
 
-    public static GenreDto addedGenre;
+    private static GenreDto addedGenre;
+
+    private static StaffFullDto addedStaff;
 
     public static final String PATH_PREFIX = "/genres";
 
@@ -42,21 +49,47 @@ public class Test5Genres {
         mvc = MockMvcBuilders.webAppContextSetup(wac)
                 .build();
 
-    }
+        if (addedStaff == null) {
+            StaffAuthDto staffAuthDto = StaffAuthDto.builder()
+                    .password("password123")
+                    .firstname("John")
+                    .surname("Doe")
+                    .birthDate(LocalDate.of(1990, 1, 1))
+                    .registrationDate(LocalDateTime.now())
+                    .build();
+            try {
+                MvcResult result = mvc.perform(MockMvcRequestBuilders.post(Test1Staff.PATH_PREFIX)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(staffAuthDto)))
+                        .andReturn();
 
+                assertEquals(result.getResponse().getStatus(), HttpStatus.CREATED.value());
+
+                addedStaff = objectMapper.readValue(
+                        result.getResponse().getContentAsString(),
+                        StaffFullDto.class
+                );
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException();
+            }
+        }
+
+    }
 
     @Test
     @Order(1)
     public void whenCreate_ThenReturn201AndSameGenreWithId() {
         try {
-            GenrePostDto ageRatingPostDto = GenrePostDto.builder()
+            GenrePostDto genresPostDto = GenrePostDto.builder()
                     .name("genre")
                     .lastChangerId(addedStaff.getId())
                     .build();
 
             MvcResult result = mvc.perform(MockMvcRequestBuilders.post(PATH_PREFIX)
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(ageRatingPostDto)))
+                            .content(objectMapper.writeValueAsString(genresPostDto)))
                     .andReturn();
 
             assertEquals(result.getResponse().getStatus(), HttpStatus.CREATED.value());
@@ -65,8 +98,8 @@ public class Test5Genres {
                     GenreDto.class
             );
 
-            assertEquals(addedGenre.getLastChanger().getId(), ageRatingPostDto.getLastChangerId());
-            assertEquals(addedGenre.getName(), ageRatingPostDto.getName());
+            assertEquals(addedGenre.getLastChanger().getId(), genresPostDto.getLastChangerId());
+            assertEquals(addedGenre.getName(), genresPostDto.getName());
 
         } catch (Exception e) {
             e.printStackTrace();

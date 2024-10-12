@@ -25,8 +25,8 @@ public class UserServiceMockTest {
     UserService userService;
     UserRepository userRepositoryMock;
     UserMapper userMapper;
-    
-    
+
+
 
     @BeforeEach
     public void init() {
@@ -113,5 +113,5 @@ public class UserServiceMockTest {
                 .deleteById(userUuid);
     }
 
-    
+
 }

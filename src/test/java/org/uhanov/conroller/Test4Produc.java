@@ -16,15 +16,23 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.uhanov.WebAppInitializerTestConfig;
+import org.uhanov.dto.agerating.AgeRatingDto;
+import org.uhanov.dto.agerating.AgeRatingPostDto;
+import org.uhanov.dto.creator.CreatorAuthDto;
+import org.uhanov.dto.creator.CreatorDto;
+import org.uhanov.dto.genre.GenreDto;
+import org.uhanov.dto.genre.GenrePostDto;
 import org.uhanov.dto.product.ProductDto;
 import org.uhanov.dto.product.ProductPostDto;
+import org.uhanov.dto.staff.StaffAuthDto;
+import org.uhanov.dto.staff.StaffFullDto;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.uhanov.conroller.Test3AgeRating.addedAgeRating;
-import static org.uhanov.conroller.Test5Genres.addedGenre;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.uhanov.conroller.Test6Creator.addedCreator;
 
 @ExtendWith(SpringExtension.class)
@@ -38,7 +46,15 @@ public class Test4Produc {
     public ObjectMapper objectMapper;
     public static MockMvc mvc;
 
-    public static ProductDto addedProduct;
+    private static ProductDto addedProduct;
+
+    private static GenreDto addedGenre;
+
+    private static StaffFullDto addedStaff;
+
+    private static AgeRatingDto addedAgeRating;
+
+    private static CreatorDto addedCreator;
 
     public static final String PATH_PREFIX = "/products";
 
@@ -50,6 +66,83 @@ public class Test4Produc {
     public void init() {
         mvc = MockMvcBuilders.webAppContextSetup(wac)
                 .build();
+
+        if (addedStaff == null) {
+            try {
+                StaffAuthDto staffAuthDto = StaffAuthDto.builder()
+                        .password("password123")
+                        .firstname("John")
+                        .surname("Doe")
+                        .birthDate(LocalDate.of(1990, 1, 1))
+                        .registrationDate(LocalDateTime.now())
+                        .build();
+                MvcResult result = mvc.perform(MockMvcRequestBuilders.post(Test1Staff.PATH_PREFIX)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(staffAuthDto)))
+                        .andReturn();
+
+                assertEquals(result.getResponse().getStatus(), HttpStatus.CREATED.value());
+
+                addedStaff = objectMapper.readValue(
+                        result.getResponse().getContentAsString(),
+                        StaffFullDto.class
+                );
+
+                CreatorAuthDto creatorAuthDto = CreatorAuthDto.builder()
+                        .password("password123")
+                        .name("CreatorName")
+                        .registrationDate(LocalDateTime.now())
+                        .build();
+
+                MvcResult result4 = mvc.perform(MockMvcRequestBuilders.post(Test6Creator.PATH_PREFIX)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(creatorAuthDto)))
+                        .andReturn();
+
+                assertEquals(result4.getResponse().getStatus(), HttpStatus.CREATED.value());
+
+                addedCreator = objectMapper.readValue(
+                        result4.getResponse().getContentAsString(),
+                        CreatorDto.class
+                );
+
+                GenrePostDto genrePostDto = GenrePostDto.builder()
+                        .name("genre")
+                        .lastChangerId(addedStaff.getId())
+                        .build();
+
+                MvcResult result1 = mvc.perform(MockMvcRequestBuilders.post(Test5Genres.PATH_PREFIX)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(genrePostDto)))
+                        .andReturn();
+
+                assertEquals(result1.getResponse().getStatus(), HttpStatus.CREATED.value());
+                addedGenre = objectMapper.readValue(
+                        result1.getResponse().getContentAsString(),
+                        GenreDto.class
+                );
+
+                AgeRatingPostDto ageRatingPostDto = AgeRatingPostDto.builder()
+                        .name("ageRating")
+                        .lastChangerId(addedStaff.getId())
+                        .build();
+
+                MvcResult result2 = mvc.perform(MockMvcRequestBuilders.post(Test3AgeRating.PATH_PREFIX)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(ageRatingPostDto)))
+                        .andReturn();
+
+                assertEquals(result2.getResponse().getStatus(), HttpStatus.CREATED.value());
+                addedAgeRating = objectMapper.readValue(
+                        result2.getResponse().getContentAsString(),
+                        AgeRatingDto.class
+                );
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException();
+            }
+        }
 
     }
 
@@ -175,7 +268,7 @@ public class Test4Produc {
                     .andExpect(MockMvcResultMatchers.status().isNotFound())
                     .andReturn();
 
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException();
         }

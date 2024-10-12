@@ -18,6 +18,11 @@ import org.springframework.web.context.WebApplicationContext;
 import org.uhanov.WebAppInitializerTestConfig;
 import org.uhanov.dto.agerating.AgeRatingDto;
 import org.uhanov.dto.agerating.AgeRatingPostDto;
+import org.uhanov.dto.staff.StaffAuthDto;
+import org.uhanov.dto.staff.StaffFullDto;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -33,7 +38,9 @@ public class Test3AgeRating {
     public ObjectMapper objectMapper;
     public static MockMvc mvc;
 
-    public static AgeRatingDto addedAgeRating;
+    private static AgeRatingDto addedAgeRating;
+
+    private static StaffFullDto addedStaff;
 
     public static final String PATH_PREFIX = "/age_ratings";
 
@@ -41,6 +48,33 @@ public class Test3AgeRating {
     public void init() {
         mvc = MockMvcBuilders.webAppContextSetup(wac)
                 .build();
+
+        if (addedStaff == null) {
+            StaffAuthDto staffAuthDto = StaffAuthDto.builder()
+                    .password("password123")
+                    .firstname("John")
+                    .surname("Doe")
+                    .birthDate(LocalDate.of(1990, 1, 1))
+                    .registrationDate(LocalDateTime.now())
+                    .build();
+            try {
+                MvcResult result = mvc.perform(MockMvcRequestBuilders.post(Test1Staff.PATH_PREFIX)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(staffAuthDto)))
+                        .andReturn();
+
+                assertEquals(result.getResponse().getStatus(), HttpStatus.CREATED.value());
+
+                addedStaff = objectMapper.readValue(
+                        result.getResponse().getContentAsString(),
+                        StaffFullDto.class
+                );
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException();
+            }
+        }
 
     }
 
@@ -50,7 +84,7 @@ public class Test3AgeRating {
         try {
             AgeRatingPostDto ageRatingPostDto = AgeRatingPostDto.builder()
                     .name("ageRating")
-                    .lastChangerId(Test1Staff.addedStaff.getId())
+                    .lastChangerId(addedStaff.getId())
                     .build();
 
             MvcResult result = mvc.perform(MockMvcRequestBuilders.post(PATH_PREFIX)
@@ -66,7 +100,7 @@ public class Test3AgeRating {
 
             assertEquals(addedAgeRating.getLastChanger().getId(), ageRatingPostDto.getLastChangerId());
             assertEquals(addedAgeRating.getName(), ageRatingPostDto.getName());
-            
+
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException();
@@ -123,7 +157,7 @@ public class Test3AgeRating {
         try {
             AgeRatingPostDto ageRatingPostDto = AgeRatingPostDto.builder()
                     .name("toDelete")
-                    .lastChangerId(Test1Staff.addedStaff.getId())
+                    .lastChangerId(addedStaff.getId())
                     .build();
 
             MvcResult toDelete = mvc.perform(MockMvcRequestBuilders.post(PATH_PREFIX)

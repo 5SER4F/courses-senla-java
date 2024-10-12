@@ -96,7 +96,7 @@ public class GenreServiceMockTest {
         verify(genreRepositoryMock, times(1))
                 .findById(genreId);
     }
-    
+
     @Test
     public void whenUpdate_thenCallRepoUpdate() {
         GenreMapper genreMapper = mock(GenreMapper.class);

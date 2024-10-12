@@ -38,7 +38,7 @@ public class Test2User {
     public ObjectMapper objectMapper;
     public static MockMvc mvc;
 
-    public static UserFullDto addedUser;
+    private static UserFullDto addedUser;
     private static UserFullDto recipientUser;
 
     public static final String PATH_PREFIX = "/users";
@@ -216,7 +216,7 @@ public class Test2User {
     }
 
 
-    private MvcResult createUser(UserAuthDto dto) throws Exception {
+    public MvcResult createUser(UserAuthDto dto) throws Exception {
         return mvc.perform(
                         MockMvcRequestBuilders.post(PATH_PREFIX)
                                 .contentType(MediaType.APPLICATION_JSON)
