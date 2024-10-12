@@ -16,30 +16,28 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.uhanov.WebAppInitializerTestConfig;
-import org.uhanov.dto.purchase.PurchaseDto;
-import org.uhanov.dto.purchase.PurchasePostDto;
+import org.uhanov.dto.creator.CreatorAuthDto;
+import org.uhanov.dto.creator.CreatorDto;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.uhanov.conroller.Test2.addedUser;
-import static org.uhanov.conroller.Test5.addedProduct;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(SpringExtension.class)
 @SpringJUnitWebConfig(value = WebAppInitializerTestConfig.class)
 @ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class Test7 {
+public class Test6Creator {
     @Autowired
     public WebApplicationContext wac;
     @Autowired
     public ObjectMapper objectMapper;
     public static MockMvc mvc;
 
-    public static PurchaseDto addedPurchase;
+    public static CreatorDto addedCreator;
 
-    public static final String PATH_PREFIX = "/purchases";
+    public static final String PATH_PREFIX = "/creators";
 
     @BeforeEach
     public void init() {
@@ -50,30 +48,49 @@ public class Test7 {
 
     @Test
     @Order(1)
-    public void whenCreate_ThenReturn201AndSameStaffWithId() {
+    public void whenCreate_ThenReturn201AndSameCreatorWithId() {
+        CreatorAuthDto creatorAuthDto = CreatorAuthDto.builder()
+                .password("password123")
+                .name("CreatorName")
+                .registrationDate(LocalDateTime.now())
+                .build();
         try {
-            PurchasePostDto purchasePostDto = PurchasePostDto.builder()
-                    .buyerId(addedUser.getId())
-                    .productId(addedProduct.getId())
-                    .purchaseDate(LocalDateTime.now())
-                    .build();
-
             MvcResult result = mvc.perform(MockMvcRequestBuilders.post(PATH_PREFIX)
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(purchasePostDto)))
+                            .content(objectMapper.writeValueAsString(creatorAuthDto)))
                     .andReturn();
 
             assertEquals(result.getResponse().getStatus(), HttpStatus.CREATED.value());
-            addedPurchase = objectMapper.readValue(
+
+            addedCreator = objectMapper.readValue(
                     result.getResponse().getContentAsString(),
-                    PurchaseDto.class
+                    CreatorDto.class
             );
 
-            assertEquals(addedPurchase.getBuyer().getId(), purchasePostDto.getBuyerId());
-            assertEquals(addedPurchase.getProduct().getId(), purchasePostDto.getProductId());
-            assertEquals(addedPurchase.getCost().doubleValue(), addedProduct.getPrice() -
-                    (addedProduct.getPrice() * addedProduct.getDiscount()) );
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException();
+        }
 
+        assertNotNull(addedCreator.getId());
+
+        assertEquals(addedCreator.getName(), creatorAuthDto.getName());
+    }
+
+    @Test
+    @Order(3)
+    public void whenUpdate_thenReturn200() {
+        try {
+            MvcResult result = mvc.perform(
+                    MockMvcRequestBuilders.patch(
+                                    PATH_PREFIX + "/" + addedCreator.getId()
+                            )
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(CreatorAuthDto.builder().name("UpdateName")
+                                    .build()))
+            ).andReturn();
+            addedCreator.setName("UpdateName");
+            assertEquals(result.getResponse().getStatus(), HttpStatus.OK.value());
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException();
@@ -81,24 +98,21 @@ public class Test7 {
     }
 
     @Test
-    @Order(2)
-    public void whenGet_ThenReturn201AndStaffWithPassedId() {
+    @Order(3)
+    public void whenGet_ThenReturn201AndCreatorWithPassedId() {
         try {
             MvcResult result = mvc.perform(
-                            MockMvcRequestBuilders.get(PATH_PREFIX + "/" + addedPurchase.getId()
+                            MockMvcRequestBuilders.get(PATH_PREFIX + "/" + addedCreator.getId()
                                     )
                                     .accept(MediaType.APPLICATION_JSON))
-                    .andExpect(MockMvcResultMatchers.status().isOk())
                     .andReturn();
 
-            PurchaseDto getPurchace = objectMapper.readValue(
+            CreatorDto getCreator = objectMapper.readValue(
                     result.getResponse().getContentAsString(),
-                    PurchaseDto.class
+                    CreatorDto.class
             );
-
-            assertEquals(addedPurchase.getId(), getPurchace.getId());
-            assertEquals(addedPurchase.getBuyer().getId(), getPurchace.getBuyer().getId());
-            assertEquals(addedPurchase.getProduct().getId(), getPurchace.getProduct().getId());
+            assertEquals(addedCreator.getId(), getCreator.getId());
+            assertEquals(addedCreator.getName(), getCreator.getName());
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException();
@@ -109,22 +123,21 @@ public class Test7 {
     @Order(4)
     public void whenDelete_thenReturn204After404() {
         try {
-            PurchasePostDto purchasePostDto = PurchasePostDto.builder()
-                    .buyerId(addedUser.getId())
-                    .productId(addedProduct.getId())
-                    .purchaseDate(LocalDateTime.now())
+            CreatorAuthDto creatorAuthDto = CreatorAuthDto.builder()
+                    .password("password123")
+                    .name("toDelete")
+                    .registrationDate(LocalDateTime.now())
                     .build();
-
             MvcResult toDelete = mvc.perform(MockMvcRequestBuilders.post(PATH_PREFIX)
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(purchasePostDto)))
+                            .content(objectMapper.writeValueAsString(creatorAuthDto)))
                     .andExpect(MockMvcResultMatchers.status().isCreated())
                     .andReturn();
 
             MvcResult deleteResult = mvc.perform(
                             MockMvcRequestBuilders.delete(PATH_PREFIX + "/" +
                                             objectMapper.readValue(toDelete.getResponse().getContentAsString(),
-                                                    PurchaseDto.class).getId())
+                                                    CreatorDto.class).getId())
                                     .accept(MediaType.APPLICATION_JSON)
                     ).andExpect(MockMvcResultMatchers.status().isNoContent())
                     .andReturn();
@@ -132,7 +145,7 @@ public class Test7 {
             MvcResult result = mvc.perform(
                             MockMvcRequestBuilders.get(PATH_PREFIX + "/" +
                                             objectMapper.readValue(toDelete.getResponse().getContentAsString(),
-                                                    PurchaseDto.class).getId()
+                                                    CreatorDto.class).getId()
                                     )
                                     .accept(MediaType.APPLICATION_JSON))
                     .andExpect(MockMvcResultMatchers.status().isNotFound())
@@ -144,4 +157,5 @@ public class Test7 {
         }
 
     }
+
 }

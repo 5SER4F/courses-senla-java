@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @SpringJUnitWebConfig(value = WebAppInitializerTestConfig.class)
 @ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class Test1 {
+public class Test1Staff {
     @Autowired
     public WebApplicationContext wac;
     @Autowired

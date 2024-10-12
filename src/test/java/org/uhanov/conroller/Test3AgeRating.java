@@ -1,7 +1,6 @@
 package org.uhanov.conroller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,38 +16,26 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.uhanov.WebAppInitializerTestConfig;
-import org.uhanov.dto.product.ProductDto;
-import org.uhanov.dto.product.ProductPostDto;
+import org.uhanov.dto.agerating.AgeRatingDto;
+import org.uhanov.dto.agerating.AgeRatingPostDto;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Set;
-import java.util.function.DoubleBinaryOperator;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.uhanov.conroller.Test3.addedAgeRating;
-import static org.uhanov.conroller.Test4.addedGenre;
-import static org.uhanov.conroller.Test6.addedCreator;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(SpringExtension.class)
 @SpringJUnitWebConfig(value = WebAppInitializerTestConfig.class)
 @ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class Test5 {
+public class Test3AgeRating {
     @Autowired
     public WebApplicationContext wac;
     @Autowired
     public ObjectMapper objectMapper;
     public static MockMvc mvc;
 
-    public static ProductDto addedProduct;
+    public static AgeRatingDto addedAgeRating;
 
-    public static final String PATH_PREFIX = "/products";
-
-    public static final double PRICE = 100;
-
-    public static final double DISCOUNT = 0.4;
+    public static final String PATH_PREFIX = "/age_ratings";
 
     @BeforeEach
     public void init() {
@@ -59,47 +46,31 @@ public class Test5 {
 
     @Test
     @Order(1)
-    public void whenCreate_ThenReturn201AndSameStaffWithId() {
-        ProductPostDto productPostDto = ProductPostDto.builder()
-                .name("ProductName")
-                .dateAdded(LocalDate.now())
-                .price(PRICE)
-                .discount(DISCOUNT)
-                .creatorId(addedCreator.getId())
-                .ageRatingId(addedAgeRating.getId())
-                .genresIds(Set.of(addedGenre.getId()))
-                .build();
+    public void whenCreate_ThenReturn201AndSameAgeRatingWithId() {
         try {
-            System.out.println(objectMapper.writeValueAsString(productPostDto));
+            AgeRatingPostDto ageRatingPostDto = AgeRatingPostDto.builder()
+                    .name("ageRating")
+                    .lastChangerId(Test1Staff.addedStaff.getId())
+                    .build();
+
             MvcResult result = mvc.perform(MockMvcRequestBuilders.post(PATH_PREFIX)
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(productPostDto)))
+                            .content(objectMapper.writeValueAsString(ageRatingPostDto)))
                     .andReturn();
 
             assertEquals(result.getResponse().getStatus(), HttpStatus.CREATED.value());
-
-
-            addedProduct = objectMapper.readValue(
+            addedAgeRating = objectMapper.readValue(
                     result.getResponse().getContentAsString(),
-                    ProductDto.class
+                    AgeRatingDto.class
             );
 
-
+            assertEquals(addedAgeRating.getLastChanger().getId(), ageRatingPostDto.getLastChangerId());
+            assertEquals(addedAgeRating.getName(), ageRatingPostDto.getName());
+            
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException();
         }
-
-        assertNotNull(addedProduct.getId());
-
-        assertEquals(addedProduct.getName(), productPostDto.getName());
-        assertEquals(addedProduct.getPrice(), productPostDto.getPrice());
-        assertEquals(addedProduct.getDiscount(), productPostDto.getDiscount());
-
-        assertEquals(addedProduct.getCreator().getId(), productPostDto.getCreatorId());
-        assertEquals(addedProduct.getAgeRating().getId(), productPostDto.getAgeRatingId());
-        assertEquals(addedProduct.getGenres().stream().findFirst().get().getId(),
-                productPostDto.getGenresIds().stream().findFirst().get());
     }
 
     @Test
@@ -108,13 +79,13 @@ public class Test5 {
         try {
             MvcResult result = mvc.perform(
                     MockMvcRequestBuilders.patch(
-                                    PATH_PREFIX + "/" + addedProduct.getId()
+                                    PATH_PREFIX + "/" + addedAgeRating.getId()
                             )
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(ProductPostDto.builder().name("UpdateName")
+                            .content(objectMapper.writeValueAsString(AgeRatingPostDto.builder().name("UpdateName")
                                     .build()))
             ).andReturn();
-            addedProduct.setName("UpdateName");
+            addedAgeRating.setName("UpdateName");
             assertEquals(result.getResponse().getStatus(), HttpStatus.OK.value());
         } catch (Exception e) {
             e.printStackTrace();
@@ -124,19 +95,22 @@ public class Test5 {
 
     @Test
     @Order(3)
-    public void whenGet_ThenReturn201AndStaffWithPassedId() {
+    public void whenGet_ThenReturn201AndAgeRatingWithPassedId() {
         try {
             MvcResult result = mvc.perform(
-                            MockMvcRequestBuilders.get(PATH_PREFIX + "/" + addedProduct.getId()
+                            MockMvcRequestBuilders.get(PATH_PREFIX + "/" + addedAgeRating.getId()
                                     )
                                     .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(MockMvcResultMatchers.status().isOk())
                     .andReturn();
 
-            ProductDto getProduct = objectMapper.readValue(
+            AgeRatingDto getAr = objectMapper.readValue(
                     result.getResponse().getContentAsString(),
-                    ProductDto.class
+                    AgeRatingDto.class
             );
-            assertEquals(getProduct, addedProduct);
+            assertEquals(addedAgeRating.getId(), getAr.getId());
+            assertEquals(addedAgeRating.getName(), getAr.getName());
+            assertEquals(addedAgeRating.getLastChanger().getId(), getAr.getLastChanger().getId());
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException();
@@ -147,25 +121,21 @@ public class Test5 {
     @Order(4)
     public void whenDelete_thenReturn204After404() {
         try {
-            ProductPostDto Product = ProductPostDto.builder()
-                    .name("ProductName")
-                    .dateAdded(LocalDate.now())
-                    .price(PRICE)
-                    .discount(DISCOUNT)
-                    .creatorId(addedCreator.getId())
-                    .ageRatingId(addedAgeRating.getId())
-                    .genresIds(Set.of(addedGenre.getId()))
+            AgeRatingPostDto ageRatingPostDto = AgeRatingPostDto.builder()
+                    .name("toDelete")
+                    .lastChangerId(Test1Staff.addedStaff.getId())
                     .build();
+
             MvcResult toDelete = mvc.perform(MockMvcRequestBuilders.post(PATH_PREFIX)
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(Product)))
+                            .content(objectMapper.writeValueAsString(ageRatingPostDto)))
                     .andExpect(MockMvcResultMatchers.status().isCreated())
                     .andReturn();
 
             MvcResult deleteResult = mvc.perform(
                             MockMvcRequestBuilders.delete(PATH_PREFIX + "/" +
                                             objectMapper.readValue(toDelete.getResponse().getContentAsString(),
-                                                    ProductDto.class).getId())
+                                                    AgeRatingDto.class).getId())
                                     .accept(MediaType.APPLICATION_JSON)
                     ).andExpect(MockMvcResultMatchers.status().isNoContent())
                     .andReturn();
@@ -173,7 +143,7 @@ public class Test5 {
             MvcResult result = mvc.perform(
                             MockMvcRequestBuilders.get(PATH_PREFIX + "/" +
                                             objectMapper.readValue(toDelete.getResponse().getContentAsString(),
-                                                    ProductDto.class).getId()
+                                                    AgeRatingDto.class).getId()
                                     )
                                     .accept(MediaType.APPLICATION_JSON))
                     .andExpect(MockMvcResultMatchers.status().isNotFound())
@@ -185,4 +155,5 @@ public class Test5 {
         }
 
     }
+
 }

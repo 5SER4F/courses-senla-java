@@ -16,26 +16,29 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.uhanov.WebAppInitializerTestConfig;
-import org.uhanov.dto.genre.GenreDto;
-import org.uhanov.dto.genre.GenrePostDto;
+import org.uhanov.dto.purchase.PurchaseDto;
+import org.uhanov.dto.purchase.PurchasePostDto;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.uhanov.conroller.Test1.addedStaff;
+import java.time.LocalDateTime;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.uhanov.conroller.Test2User.addedUser;
+import static org.uhanov.conroller.Test4Produc.addedProduct;
 
 @ExtendWith(SpringExtension.class)
 @SpringJUnitWebConfig(value = WebAppInitializerTestConfig.class)
 @ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class Test4 {
+public class Test7Purchase {
     @Autowired
     public WebApplicationContext wac;
     @Autowired
     public ObjectMapper objectMapper;
     public static MockMvc mvc;
 
-    public static GenreDto addedGenre;
+    public static PurchaseDto addedPurchase;
 
-    public static final String PATH_PREFIX = "/genres";
+    public static final String PATH_PREFIX = "/purchases";
 
     @BeforeEach
     public void init() {
@@ -44,29 +47,31 @@ public class Test4 {
 
     }
 
-
     @Test
     @Order(1)
-    public void whenCreate_ThenReturn201AndSameStaffWithId() {
+    public void whenCreate_ThenReturn201AndSamePurchaseWithId() {
         try {
-            GenrePostDto ageRatingPostDto = GenrePostDto.builder()
-                    .name("genre")
-                    .lastChangerId(addedStaff.getId())
+            PurchasePostDto purchasePostDto = PurchasePostDto.builder()
+                    .buyerId(addedUser.getId())
+                    .productId(addedProduct.getId())
+                    .purchaseDate(LocalDateTime.now())
                     .build();
 
             MvcResult result = mvc.perform(MockMvcRequestBuilders.post(PATH_PREFIX)
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(ageRatingPostDto)))
+                            .content(objectMapper.writeValueAsString(purchasePostDto)))
                     .andReturn();
 
             assertEquals(result.getResponse().getStatus(), HttpStatus.CREATED.value());
-            addedGenre = objectMapper.readValue(
+            addedPurchase = objectMapper.readValue(
                     result.getResponse().getContentAsString(),
-                    GenreDto.class
+                    PurchaseDto.class
             );
 
-            assertEquals(addedGenre.getLastChanger().getId(), ageRatingPostDto.getLastChangerId());
-            assertEquals(addedGenre.getName(), ageRatingPostDto.getName());
+            assertEquals(addedPurchase.getBuyer().getId(), purchasePostDto.getBuyerId());
+            assertEquals(addedPurchase.getProduct().getId(), purchasePostDto.getProductId());
+            assertEquals(addedPurchase.getCost().doubleValue(), addedProduct.getPrice() -
+                    (addedProduct.getPrice() * addedProduct.getDiscount()) );
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -76,42 +81,23 @@ public class Test4 {
 
     @Test
     @Order(2)
-    public void whenUpdate_thenReturn200() {
+    public void whenGet_ThenReturn201AndPurchaseWithPassedId() {
         try {
             MvcResult result = mvc.perform(
-                    MockMvcRequestBuilders.patch(
-                                    PATH_PREFIX + "/" + addedGenre.getId()
-                            )
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(GenrePostDto.builder().name("UpdateName")
-                                    .build()))
-            ).andReturn();
-            addedGenre.setName("UpdateName");
-            assertEquals(result.getResponse().getStatus(), HttpStatus.OK.value());
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException();
-        }
-    }
-
-    @Test
-    @Order(3)
-    public void whenGet_ThenReturn201AndStaffWithPassedId() {
-        try {
-            MvcResult result = mvc.perform(
-                            MockMvcRequestBuilders.get(PATH_PREFIX + "/" + addedGenre.getId()
+                            MockMvcRequestBuilders.get(PATH_PREFIX + "/" + addedPurchase.getId()
                                     )
                                     .accept(MediaType.APPLICATION_JSON))
                     .andExpect(MockMvcResultMatchers.status().isOk())
                     .andReturn();
 
-            GenreDto getGenre = objectMapper.readValue(
+            PurchaseDto getPurchace = objectMapper.readValue(
                     result.getResponse().getContentAsString(),
-                    GenreDto.class
+                    PurchaseDto.class
             );
-            assertEquals(addedGenre.getId(), getGenre.getId());
-            assertEquals(addedGenre.getName(), getGenre.getName());
-            assertEquals(addedGenre.getLastChanger().getId(), getGenre.getLastChanger().getId());
+
+            assertEquals(addedPurchase.getId(), getPurchace.getId());
+            assertEquals(addedPurchase.getBuyer().getId(), getPurchace.getBuyer().getId());
+            assertEquals(addedPurchase.getProduct().getId(), getPurchace.getProduct().getId());
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException();
@@ -122,21 +108,22 @@ public class Test4 {
     @Order(4)
     public void whenDelete_thenReturn204After404() {
         try {
-            GenrePostDto genrePostDto = GenrePostDto.builder()
-                    .name("toDelete")
-                    .lastChangerId(addedStaff.getId())
+            PurchasePostDto purchasePostDto = PurchasePostDto.builder()
+                    .buyerId(addedUser.getId())
+                    .productId(addedProduct.getId())
+                    .purchaseDate(LocalDateTime.now())
                     .build();
 
             MvcResult toDelete = mvc.perform(MockMvcRequestBuilders.post(PATH_PREFIX)
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(genrePostDto)))
+                            .content(objectMapper.writeValueAsString(purchasePostDto)))
                     .andExpect(MockMvcResultMatchers.status().isCreated())
                     .andReturn();
 
             MvcResult deleteResult = mvc.perform(
                             MockMvcRequestBuilders.delete(PATH_PREFIX + "/" +
                                             objectMapper.readValue(toDelete.getResponse().getContentAsString(),
-                                                    GenreDto.class).getId())
+                                                    PurchaseDto.class).getId())
                                     .accept(MediaType.APPLICATION_JSON)
                     ).andExpect(MockMvcResultMatchers.status().isNoContent())
                     .andReturn();
@@ -144,7 +131,7 @@ public class Test4 {
             MvcResult result = mvc.perform(
                             MockMvcRequestBuilders.get(PATH_PREFIX + "/" +
                                             objectMapper.readValue(toDelete.getResponse().getContentAsString(),
-                                                    GenreDto.class).getId()
+                                                    PurchaseDto.class).getId()
                                     )
                                     .accept(MediaType.APPLICATION_JSON))
                     .andExpect(MockMvcResultMatchers.status().isNotFound())
@@ -156,6 +143,4 @@ public class Test4 {
         }
 
     }
-
-
 }
