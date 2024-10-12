@@ -44,7 +44,6 @@ public class DispatcherConfigTest implements WebMvcConfigurer {
     private MappingJackson2HttpMessageConverter jacksonConverter() {
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
         ObjectMapper mapper = new ObjectMapper();
-        // Регистрация сериализатора и десериализатора для LocalDateTime
         mapper.registerModule(new SimpleModule()
                 .addSerializer(LocalDateTime.class, new LocalDateTimeSerializer())
                 .addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer())
