@@ -14,7 +14,7 @@ public interface GenreService {
     GenreDto getById(UUID uuid);
 
 
-    void update(GenrePostDto genreDto);
+    GenreDto update(GenrePostDto genreDto);
 
 
     void delete(UUID uuid);

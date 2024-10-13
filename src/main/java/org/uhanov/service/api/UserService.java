@@ -13,7 +13,7 @@ public interface UserService {
 
     UserFullDto getById(UUID uuid);
 
-    void update(UserAuthDto dto);
+    UserFullDto update(UserAuthDto dto);
 
     void delete(UUID uuid);
 

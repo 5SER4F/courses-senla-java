@@ -49,7 +49,7 @@ public class AgeRatingServiceImpl implements AgeRatingService {
 
     @Transactional
     @Override
-    public void update(AgeRatingPostDto ageRatingDto) {
+    public AgeRatingDto update(AgeRatingPostDto ageRatingDto) {
         AgeRating ageRating = get(ageRatingDto.getId());
         ageRatingMapper.updateAgeRating(ageRatingDto, ageRating);
         if (ageRatingDto.getLastChangerId() != null) {
@@ -58,7 +58,9 @@ public class AgeRatingServiceImpl implements AgeRatingService {
                             .orElseThrow(ResourceNotFoundException::new)
             );
         }
-        repository.update(ageRating);
+        return ageRatingMapper.toDto(
+                repository.update(ageRating)
+        );
     }
 
     @Transactional

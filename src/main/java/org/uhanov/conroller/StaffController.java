@@ -19,7 +19,7 @@ public class StaffController {
     private final ObjectMapper objectMapper;
 
 
-    @PostMapping("")
+    @PostMapping()
     public ResponseEntity<StaffFullDto> create(
             @RequestBody StaffAuthDto dto
     ) {
@@ -29,14 +29,13 @@ public class StaffController {
 
 
     @PatchMapping("/{staffId}")
-    public ResponseEntity update(
+    public ResponseEntity<StaffFullDto> update(
             @PathVariable("staffId") UUID staffId,
             @RequestBody StaffAuthDto dto
     ) {
         dto.setId(staffId);
-        service.update(dto);
         return ResponseEntity.status(HttpStatus.OK)
-                .build();
+                .body(service.update(dto));
     }
 
 

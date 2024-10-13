@@ -13,7 +13,7 @@ public interface StaffService {
     StaffFullDto getById(UUID uuid);
 
 
-    void update(StaffAuthDto dto);
+    StaffFullDto update(StaffAuthDto dto);
 
 
     void delete(UUID uuid);

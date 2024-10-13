@@ -41,10 +41,12 @@ public class CreatorServiceImpl implements CreatorService {
 
     @Transactional
     @Override
-    public void update(CreatorAuthDto creatorAuthDto) {
+    public CreatorDto update(CreatorAuthDto creatorAuthDto) {
         Creator creator = get(creatorAuthDto.getId());
         creatorMapper.updateCreator(creatorAuthDto, creator);
-        repository.update(creator);
+        return creatorMapper.toDto(
+                repository.update(creator)
+        );
     }
 
     @Transactional

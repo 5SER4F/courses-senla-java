@@ -16,7 +16,7 @@ import java.util.UUID;
 public class AgeRatingController {
     private final AgeRatingService service;
 
-    @PostMapping("")
+    @PostMapping()
     public ResponseEntity<AgeRatingDto> create(
             @RequestBody AgeRatingPostDto dto
     ) {
@@ -26,14 +26,13 @@ public class AgeRatingController {
 
 
     @PatchMapping("/{ageRatingId}")
-    public ResponseEntity update(
+    public ResponseEntity<AgeRatingDto> update(
             @PathVariable("ageRatingId") UUID ageRatingId,
             @RequestBody AgeRatingPostDto dto
     ) {
         dto.setId(ageRatingId);
-        service.update(dto);
         return ResponseEntity.status(HttpStatus.OK)
-                .build();
+                .body(service.update(dto));
     }
 
 

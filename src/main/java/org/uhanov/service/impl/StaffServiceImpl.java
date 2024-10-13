@@ -39,10 +39,12 @@ public class StaffServiceImpl implements StaffService {
     }
 
     @Override
-    public void update(StaffAuthDto dto) {
+    public StaffFullDto update(StaffAuthDto dto) {
         Staff staff = getEntityById(dto.getId());
         staffMapper.updateStaff(dto, staff);
-        repository.update(staff);
+        return staffMapper.toFullDto(
+                repository.update(staff)
+        );
     }
 
     @Override

@@ -2,14 +2,10 @@ package org.uhanov.service.impl;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.uhanov.dto.creator.CreatorAuthDto;
-import org.uhanov.dto.creator.CreatorDto;
-import org.uhanov.dto.mapper.CreatorMapper;
 import org.uhanov.dto.mapper.UserMapper;
 import org.uhanov.dto.mapper.UserMapperImpl;
 import org.uhanov.dto.user.UserAuthDto;
 import org.uhanov.dto.user.UserFullDto;
-import org.uhanov.model.Creator;
 import org.uhanov.model.User;
 import org.uhanov.repository.api.UserRepository;
 import org.uhanov.service.api.UserService;
@@ -20,12 +16,12 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+
 public class UserServiceMockTest {
 
     UserService userService;
     UserRepository userRepositoryMock;
     UserMapper userMapper;
-
 
 
     @BeforeEach

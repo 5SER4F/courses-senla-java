@@ -2,12 +2,10 @@ package org.uhanov.service.impl;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import org.uhanov.dto.mapper.StaffMapper;
 import org.uhanov.dto.mapper.StaffMapperImpl;
 import org.uhanov.dto.staff.StaffAuthDto;
 import org.uhanov.dto.staff.StaffFullDto;
-import org.uhanov.model.Creator;
 import org.uhanov.model.Staff;
 import org.uhanov.repository.api.StaffRepository;
 import org.uhanov.service.api.StaffService;
@@ -18,6 +16,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+
 public class StaffServiceMockTest {
     StaffService staffService;
     StaffRepository staffRepositoryMock;
@@ -72,7 +71,7 @@ public class StaffServiceMockTest {
 
     @Test
     public void whenUpdate_thenRepositoryCallFindByIdAnd() {
-       final UUID staffUuid = UUID.randomUUID();
+        final UUID staffUuid = UUID.randomUUID();
         StaffMapper creatorMapper = mock(StaffMapper.class);
         StaffAuthDto creatorAuthDto = StaffAuthDto.builder()
                 .id(staffUuid)
@@ -104,7 +103,7 @@ public class StaffServiceMockTest {
 
     @Test
     public void whenDelete_thenRepositoryCallDelete() {
-       final UUID staffUuid = UUID.randomUUID();
+        final UUID staffUuid = UUID.randomUUID();
         staffService.delete(staffUuid);
 
         verify(staffRepositoryMock, times(1))

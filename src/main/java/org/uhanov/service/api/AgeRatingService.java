@@ -13,7 +13,7 @@ public interface AgeRatingService {
     AgeRatingDto getById(UUID uuid);
 
 
-    void update(AgeRatingPostDto ageRatingDto);
+    AgeRatingDto update(AgeRatingPostDto ageRatingDto);
 
 
     void delete(UUID uuid);

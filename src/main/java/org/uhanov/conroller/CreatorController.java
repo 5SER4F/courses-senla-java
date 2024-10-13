@@ -16,7 +16,7 @@ import java.util.UUID;
 public class CreatorController {
     private final CreatorService service;
 
-    @PostMapping("")
+    @PostMapping()
     public ResponseEntity<CreatorDto> create(
             @RequestBody CreatorAuthDto dto
     ) {
@@ -26,14 +26,13 @@ public class CreatorController {
 
 
     @PatchMapping("/{creatorId}")
-    public ResponseEntity update(
+    public ResponseEntity<CreatorDto> update(
             @PathVariable("creatorId") UUID creatorId,
             @RequestBody CreatorAuthDto dto
     ) {
         dto.setId(creatorId);
-        service.update(dto);
         return ResponseEntity.status(HttpStatus.OK)
-                .build();
+                .body(service.update(dto));
     }
 
     @DeleteMapping("/{creatorId}")

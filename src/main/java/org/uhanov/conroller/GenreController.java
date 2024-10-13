@@ -16,7 +16,7 @@ import java.util.UUID;
 public class GenreController {
     private final GenreService service;
 
-    @PostMapping("")
+    @PostMapping()
     public ResponseEntity<GenreDto> create(
             @RequestBody GenrePostDto dto
     ) {
@@ -26,14 +26,13 @@ public class GenreController {
 
 
     @PatchMapping("/{genreId}")
-    public ResponseEntity update(
+    public ResponseEntity<GenreDto> update(
             @PathVariable("genreId") UUID genreId,
             @RequestBody GenrePostDto dto
     ) {
         dto.setId(genreId);
-        service.update(dto);
         return ResponseEntity.status(HttpStatus.OK)
-                .build();
+                .body(service.update(dto));
     }
 
 

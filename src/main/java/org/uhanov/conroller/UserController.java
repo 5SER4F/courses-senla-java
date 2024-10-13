@@ -20,7 +20,7 @@ public class UserController {
     private final ObjectMapper objectMapper;
 
 
-    @PostMapping("")
+    @PostMapping()
     public ResponseEntity<UserFullDto> create(
             @RequestBody UserAuthDto dto
     ) {
@@ -30,13 +30,12 @@ public class UserController {
 
 
     @PatchMapping("/{userId}")
-    public ResponseEntity update(
+    public ResponseEntity<UserFullDto> update(
             @PathVariable("userId") UUID uuid,
             @RequestBody UserAuthDto dto) {
         dto.setId(uuid);
-        service.update(dto);
         return ResponseEntity.status(HttpStatus.OK)
-                .build();
+                .body(service.update(dto));
     }
 
     @DeleteMapping("/{userId}")

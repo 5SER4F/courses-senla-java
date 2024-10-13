@@ -151,7 +151,7 @@ public class Test6Creator {
                     .andExpect(MockMvcResultMatchers.status().isNotFound())
                     .andReturn();
 
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException();
         }

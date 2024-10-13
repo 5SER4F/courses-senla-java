@@ -69,7 +69,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Transactional
     @Override
-    public void update(ProductPostDto dto) {
+    public ProductDto update(ProductPostDto dto) {
         Product product = get(dto.getId());
         productMapper.updateProduct(dto, product);
 
@@ -91,7 +91,9 @@ public class ProductServiceImpl implements ProductService {
                     Set.copyOf(genreRepository.getGenresByIds(new ArrayList<>(dto.getGenresIds())))
             );
         }
-        repository.update(product);
+        return productMapper.toDto(
+                repository.update(product)
+        );
     }
 
     @Transactional

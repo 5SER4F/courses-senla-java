@@ -16,7 +16,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.uhanov.WebAppInitializerTestConfig;
-import org.uhanov.dto.agerating.AgeRatingDto;
 import org.uhanov.dto.genre.GenreDto;
 import org.uhanov.dto.genre.GenrePostDto;
 import org.uhanov.dto.staff.StaffAuthDto;
@@ -183,7 +182,7 @@ public class Test5Genres {
                     .andExpect(MockMvcResultMatchers.status().isNotFound())
                     .andReturn();
 
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException();
         }

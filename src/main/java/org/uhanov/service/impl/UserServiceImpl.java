@@ -41,10 +41,12 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void update(UserAuthDto dto) {
+    public UserFullDto update(UserAuthDto dto) {
         User user = get(dto.getId());
         userMapper.updateUser(dto, user);
-        userRepository.update(user);
+        return userMapper.toFullDto(
+                userRepository.update(user)
+        );
     }
 
     @Transactional

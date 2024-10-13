@@ -144,11 +144,11 @@ public class Test1Staff {
                     .andReturn();
 
             MvcResult deleteResult = mvc.perform(
-                    MockMvcRequestBuilders.delete(PATH_PREFIX + "/" +
-                                    objectMapper.readValue(toDelete.getResponse().getContentAsString(),
-                                            StaffFullDto.class).getId())
-                            .accept(MediaType.APPLICATION_JSON)
-            ).andExpect(MockMvcResultMatchers.status().isNoContent())
+                            MockMvcRequestBuilders.delete(PATH_PREFIX + "/" +
+                                            objectMapper.readValue(toDelete.getResponse().getContentAsString(),
+                                                    StaffFullDto.class).getId())
+                                    .accept(MediaType.APPLICATION_JSON)
+                    ).andExpect(MockMvcResultMatchers.status().isNoContent())
                     .andReturn();
 
             MvcResult result = mvc.perform(
@@ -160,7 +160,7 @@ public class Test1Staff {
                     .andExpect(MockMvcResultMatchers.status().isNotFound())
                     .andReturn();
 
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException();
         }

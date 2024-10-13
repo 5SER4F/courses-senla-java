@@ -53,12 +53,12 @@ public class GenreServiceMockTest {
 
         when(genreRepositoryMock.save(any(Genre.class)))
                 .thenAnswer(
-                  invocationOnMock -> {
-                      Genre g = invocationOnMock
-                              .getArgument(0, Genre.class);
-                      g.setId(genreUuid);
-                      return g;
-                  }
+                        invocationOnMock -> {
+                            Genre g = invocationOnMock
+                                    .getArgument(0, Genre.class);
+                            g.setId(genreUuid);
+                            return g;
+                        }
                 );
 
         when(staffRepositoryMock.findById(staff.getId()))

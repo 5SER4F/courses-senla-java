@@ -15,7 +15,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -26,7 +25,7 @@ public class CreatorServiceMockTest {
     CreatorMapper creatorMapper;
 
     @BeforeEach
-    public  void init() {
+    public void init() {
         creatorMapper = new CreatorMapperImpl();
         creatorRepositoryMock = mock(CreatorRepository.class);
 

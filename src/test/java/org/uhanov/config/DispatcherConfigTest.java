@@ -11,11 +11,9 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import org.uhanov.dto.serializer.LocalDateTimeDeserializer;
 import org.uhanov.dto.serializer.LocalDateTimeSerializer;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 

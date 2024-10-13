@@ -33,7 +33,6 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.uhanov.conroller.Test6Creator.addedCreator;
 
 @ExtendWith(SpringExtension.class)
 @SpringJUnitWebConfig(value = WebAppInitializerTestConfig.class)

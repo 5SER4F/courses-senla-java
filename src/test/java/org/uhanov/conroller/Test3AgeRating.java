@@ -25,7 +25,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(SpringExtension.class)
 @SpringJUnitWebConfig(value = WebAppInitializerTestConfig.class)
@@ -36,6 +35,7 @@ public class Test3AgeRating {
     public WebApplicationContext wac;
     @Autowired
     public ObjectMapper objectMapper;
+
     public static MockMvc mvc;
 
     private static AgeRatingDto addedAgeRating;
@@ -183,7 +183,7 @@ public class Test3AgeRating {
                     .andExpect(MockMvcResultMatchers.status().isNotFound())
                     .andReturn();
 
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException();
         }

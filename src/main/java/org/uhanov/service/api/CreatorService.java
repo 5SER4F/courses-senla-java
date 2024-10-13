@@ -10,7 +10,7 @@ public interface CreatorService {
 
     CreatorDto getById(UUID uuid);
 
-    void update(CreatorAuthDto creatorAuthDto);
+    CreatorDto update(CreatorAuthDto creatorAuthDto);
 
     void delete(UUID uuid);
 

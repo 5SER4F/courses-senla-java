@@ -27,14 +27,13 @@ public class ProductController {
 
 
     @PatchMapping("/{productId}")
-    public ResponseEntity update(
+    public ResponseEntity<ProductDto> update(
             @PathVariable("productId") UUID productId,
             @RequestBody ProductPostDto dto
     ) {
         dto.setId(productId);
-        service.update(dto);
         return ResponseEntity.status(HttpStatus.OK)
-                .build();
+                .body(service.update(dto));
     }
 
 

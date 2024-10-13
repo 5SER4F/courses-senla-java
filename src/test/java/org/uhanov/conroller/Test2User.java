@@ -207,7 +207,8 @@ public class Test2User {
                                             "/" + recipientUser.getId())
                                     .accept(MediaType.APPLICATION_JSON))
                     .andExpect(MockMvcResultMatchers.status().isNotFound())
-                    .andReturn();;
+                    .andReturn();
+            ;
 
         } catch (Exception e) {
             e.printStackTrace();

@@ -13,7 +13,7 @@ public interface ProductService {
 
     ProductDto getById(UUID uuid);
 
-    void update(ProductPostDto dto);
+    ProductDto update(ProductPostDto dto);
 
 
     void delete(UUID uuid);

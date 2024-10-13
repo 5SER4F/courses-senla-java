@@ -3,13 +3,10 @@ package org.uhanov;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.AbstractEnvironment;
-import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
-import org.uhanov.config.AppConfig;
-import org.uhanov.config.DispatcherConfig;
 import org.uhanov.config.DispatcherConfigTest;
 import org.uhanov.config.TestConfig;
 

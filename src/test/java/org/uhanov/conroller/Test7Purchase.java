@@ -36,7 +36,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 @ExtendWith(SpringExtension.class)
@@ -154,19 +154,19 @@ public class Test7Purchase {
                         .genresIds(Set.of(addedGenre.getId()))
                         .build();
 
-                    System.out.println(objectMapper.writeValueAsString(productPostDto));
-                    MvcResult result6 = mvc.perform(MockMvcRequestBuilders.post(Test4Produc.PATH_PREFIX)
-                                    .contentType(MediaType.APPLICATION_JSON)
-                                    .content(objectMapper.writeValueAsString(productPostDto)))
-                            .andReturn();
+                System.out.println(objectMapper.writeValueAsString(productPostDto));
+                MvcResult result6 = mvc.perform(MockMvcRequestBuilders.post(Test4Produc.PATH_PREFIX)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(productPostDto)))
+                        .andReturn();
 
-                    assertEquals(result6.getResponse().getStatus(), HttpStatus.CREATED.value());
+                assertEquals(result6.getResponse().getStatus(), HttpStatus.CREATED.value());
 
 
-                    addedProduct = objectMapper.readValue(
-                            result6.getResponse().getContentAsString(),
-                            ProductDto.class
-                    );
+                addedProduct = objectMapper.readValue(
+                        result6.getResponse().getContentAsString(),
+                        ProductDto.class
+                );
 
                 UserAuthDto userAuthDto = UserAuthDto.builder()
                         .password("password")
@@ -229,7 +229,7 @@ public class Test7Purchase {
             assertEquals(addedPurchase.getBuyer().getId(), purchasePostDto.getBuyerId());
             assertEquals(addedPurchase.getProduct().getId(), purchasePostDto.getProductId());
             assertEquals(addedPurchase.getCost().doubleValue(), addedProduct.getPrice() -
-                    (addedProduct.getPrice() * addedProduct.getDiscount()) );
+                    (addedProduct.getPrice() * addedProduct.getDiscount()));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -295,7 +295,7 @@ public class Test7Purchase {
                     .andExpect(MockMvcResultMatchers.status().isNotFound())
                     .andReturn();
 
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException();
         }

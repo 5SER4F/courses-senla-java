@@ -48,7 +48,7 @@ public class GenreServiceImpl implements GenreService {
 
     @Transactional
     @Override
-    public void update(GenrePostDto genreDto) {
+    public GenreDto update(GenrePostDto genreDto) {
         Genre genre = getEntityById(genreDto.getId());
         genreMapper.updateGenre(genreDto, genre);
         if (genreDto.getLastChangerId() != null) {
@@ -57,7 +57,9 @@ public class GenreServiceImpl implements GenreService {
                             .orElseThrow(ResourceNotFoundException::new)
             );
         }
-        repository.update(genre);
+        return genreMapper.toDto(
+                repository.update(genre)
+        );
     }
 
     @Transactional
