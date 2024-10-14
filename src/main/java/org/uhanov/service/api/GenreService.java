@@ -1,20 +1,21 @@
 package org.uhanov.service.api;
 
-import org.uhanov.dto.GenreDTO;
+import org.uhanov.dto.genre.GenreDto;
+import org.uhanov.dto.genre.GenrePostDto;
 
 import java.util.UUID;
 
 public interface GenreService {
 
 
-    GenreDTO create(GenreDTO genreDTO);
+    GenreDto create(GenrePostDto genreDto);
 
 
-    GenreDTO getById(UUID uuid);
+    GenreDto getById(UUID uuid);
 
 
-    void update(GenreDTO genreDTO);
+    GenreDto update(GenrePostDto genreDto);
 
 
-    boolean delete(UUID uuid);
+    void delete(UUID uuid);
 }

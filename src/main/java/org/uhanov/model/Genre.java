@@ -3,6 +3,7 @@ package org.uhanov.model;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -25,4 +26,13 @@ public class Genre {
     @ToString.Exclude
     private Staff lastChanger;
 
+    @ManyToMany()
+    @JoinTable(
+            name = "product_genre",
+            joinColumns = @JoinColumn(name = "genre_id"),
+            inverseJoinColumns = @JoinColumn(name = "product_id")
+    )
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Set<Product> products;
 }

@@ -1,20 +1,21 @@
 package org.uhanov.service.api;
 
-import org.uhanov.dto.UserAuthDTO;
-import org.uhanov.dto.UserFullDTO;
+import org.uhanov.dto.user.MoneyTransferDto;
+import org.uhanov.dto.user.UserAuthDto;
+import org.uhanov.dto.user.UserFullDto;
 
 import java.util.UUID;
 
 
 public interface UserService {
 
-    UserFullDTO create(UserAuthDTO dto);
+    UserFullDto create(UserAuthDto dto);
 
-    UserFullDTO getById(UUID uuid);
+    UserFullDto getById(UUID uuid);
 
-    void update(UserAuthDTO dto);
+    UserFullDto update(UserAuthDto dto);
 
-    boolean delete(UUID uuid);
+    void delete(UUID uuid);
 
-    void moneyTransfer(UUID senderId, UUID recipientId, double amount);
+    void moneyTransfer(UUID senderId, MoneyTransferDto moneyTransferDto);
 }

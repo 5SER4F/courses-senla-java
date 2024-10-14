@@ -2,18 +2,18 @@ package org.uhanov.dto.mapper;
 
 import org.mapstruct.*;
 import org.springframework.stereotype.Component;
-import org.uhanov.dto.ProductDTO;
+import org.uhanov.dto.product.ProductDto;
+import org.uhanov.dto.product.ProductPostDto;
 import org.uhanov.model.Product;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {CreatorMapper.class, AgeRatingMapper.class, GenreMapper.class})
 @Component
 public interface ProductMapper {
-    Product toModel(ProductDTO dto);
+    Product toModel(ProductPostDto dto);
 
-    @Mapping(target = "purchasesWithProduct", ignore = true)
-    @Mapping(target = "genres", ignore = true)
-    ProductDTO toDto(Product product);
+    ProductDto toDto(Product product);
 
+    @Mapping(target = "id", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateProduct(ProductDTO dto, @MappingTarget Product entity);
+    void updateProduct(ProductPostDto dto, @MappingTarget Product entity);
 }

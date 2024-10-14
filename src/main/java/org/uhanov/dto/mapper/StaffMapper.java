@@ -1,25 +1,24 @@
 package org.uhanov.dto.mapper;
 
-import org.mapstruct.BeanMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.*;
 import org.springframework.stereotype.Component;
-import org.uhanov.dto.StaffAuthDTO;
-import org.uhanov.dto.StaffFullDTO;
+import org.uhanov.dto.staff.StaffAuthDto;
+import org.uhanov.dto.staff.StaffFullDto;
+import org.uhanov.dto.staff.StaffShortDto;
 import org.uhanov.model.Staff;
 
 @Mapper(componentModel = "spring")
 @Component
 public interface StaffMapper {
 
-    Staff authToModel(StaffAuthDTO dto);
+    Staff authToModel(StaffAuthDto dto);
 
-    StaffAuthDTO toAuthDto(Staff staff);
+    StaffShortDto toShortDto(Staff staff);
 
-    StaffFullDTO toFullDTO(Staff dto);
+    StaffFullDto toFullDto(Staff dto);
 
+    @Mapping(target = "id", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateStaff(StaffAuthDTO dto, @MappingTarget Staff entity);
+    void updateStaff(StaffAuthDto dto, @MappingTarget Staff entity);
 
 }

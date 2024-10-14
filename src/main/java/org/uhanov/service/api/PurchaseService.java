@@ -1,20 +1,14 @@
 package org.uhanov.service.api;
 
-import org.uhanov.dto.PurchaseDTO;
+import org.uhanov.dto.purchase.PurchaseDto;
+import org.uhanov.dto.purchase.PurchasePostDto;
 
 import java.util.UUID;
 
 public interface PurchaseService {
+    PurchaseDto create(PurchasePostDto dto);
 
+    PurchaseDto getById(UUID uuid);
 
-    PurchaseDTO create(PurchaseDTO dto);
-
-
-    PurchaseDTO getById(UUID uuid);
-
-
-    void update(PurchaseDTO dto);
-
-
-    boolean delete(UUID uuid);
+    void delete(UUID uuid);
 }

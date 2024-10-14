@@ -51,5 +51,19 @@ public class Product {
     @ToString.Exclude
     private Set<Genre> genres;
 
+    public double getPrice() {
+        if (price == null)
+            return 0;
+        return price.doubleValue();
+    }
+
+    public double countDiscountInMoney() {
+        return getPrice() * discount;
+    }
+
+    public double getFinalPrice() {
+        return getPrice() - countDiscountInMoney();
+    }
+
 
 }

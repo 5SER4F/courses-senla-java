@@ -1,20 +1,19 @@
 package org.uhanov.dto.mapper;
 
-import org.mapstruct.BeanMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.*;
 import org.springframework.stereotype.Component;
-import org.uhanov.dto.PurchaseDTO;
+import org.uhanov.dto.purchase.PurchaseDto;
+import org.uhanov.dto.purchase.PurchasePostDto;
 import org.uhanov.model.Purchase;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {UserMapper.class, ProductMapper.class})
 @Component
 public interface PurchaseMapper {
-    Purchase toModel(PurchaseDTO dto);
+    Purchase toModel(PurchasePostDto dto);
 
-    PurchaseDTO toDto(Purchase purchase);
+    PurchaseDto toDto(Purchase purchase);
 
+    @Mapping(target = "id", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updatePurchase(PurchaseDTO dto, @MappingTarget Purchase entity);
+    void updatePurchase(PurchaseDto dto, @MappingTarget Purchase entity);
 }

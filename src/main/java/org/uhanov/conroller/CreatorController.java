@@ -1,47 +1,55 @@
 package org.uhanov.conroller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
-import org.uhanov.dto.CreatorAuthDTO;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.uhanov.dto.creator.CreatorAuthDto;
+import org.uhanov.dto.creator.CreatorDto;
 import org.uhanov.service.api.CreatorService;
 
 import java.util.UUID;
 
-@Controller
-@Data
+@RestController
+@RequestMapping("/creators")
 @RequiredArgsConstructor
 public class CreatorController {
     private final CreatorService service;
-    private final ObjectMapper objectMapper;
 
-
-    public Object add(CreatorAuthDTO dto) {
-        return writeAsString(service.create(dto));
+    @PostMapping()
+    public ResponseEntity<CreatorDto> create(
+            @RequestBody CreatorAuthDto dto
+    ) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(service.create(dto));
     }
 
 
-    public void update(CreatorAuthDTO dto) {
-        service.update(dto);
+    @PatchMapping("/{creatorId}")
+    public ResponseEntity<CreatorDto> update(
+            @PathVariable("creatorId") UUID creatorId,
+            @RequestBody CreatorAuthDto dto
+    ) {
+        dto.setId(creatorId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(service.update(dto));
     }
 
-
-    public Object delete(UUID uuid) {
-        return service.delete(uuid) ? "200 OK" : "404 not found";
+    @DeleteMapping("/{creatorId}")
+    public ResponseEntity delete(
+            @PathVariable("creatorId") UUID creatorId
+    ) {
+        service.delete(creatorId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .build();
     }
 
-
-    public Object get(UUID uuid) {
-        return writeAsString(service.getById(uuid));
+    @GetMapping("/{creatorId}")
+    public ResponseEntity<CreatorDto> get(
+            @PathVariable("creatorId") UUID creatorId
+    ) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(service.getById(creatorId));
     }
 
-    private String writeAsString(Object o) {
-        try {
-            return objectMapper.writeValueAsString(o);
-        } catch (JsonProcessingException e) {
-            return "500 Internal Server Error";
-        }
-    }
 }

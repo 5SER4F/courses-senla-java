@@ -2,17 +2,18 @@ package org.uhanov.dto.mapper;
 
 import org.mapstruct.*;
 import org.springframework.stereotype.Component;
-import org.uhanov.dto.GenreDTO;
+import org.uhanov.dto.genre.GenreDto;
+import org.uhanov.dto.genre.GenrePostDto;
 import org.uhanov.model.Genre;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {StaffMapper.class})
 @Component
 public interface GenreMapper {
-    @Mapping(target = "productsWithGenre", ignore = true)
-    GenreDTO toDto(Genre genre);
+    GenreDto toDto(Genre genre);
 
-    Genre toModel(GenreDTO dto);
+    Genre toModel(GenrePostDto dto);
 
+    @Mapping(target = "id", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateGenre(GenreDTO dto, @MappingTarget Genre entity);
+    void updateGenre(GenrePostDto dto, @MappingTarget Genre entity);
 }

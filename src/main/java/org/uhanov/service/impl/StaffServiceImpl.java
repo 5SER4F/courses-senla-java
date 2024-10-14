@@ -4,10 +4,10 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.uhanov.dto.StaffAuthDTO;
-import org.uhanov.dto.StaffFullDTO;
 import org.uhanov.dto.mapper.StaffMapper;
-import org.uhanov.exception.EntityNotFoundException;
+import org.uhanov.dto.staff.StaffAuthDto;
+import org.uhanov.dto.staff.StaffFullDto;
+import org.uhanov.exception.ResourceNotFoundException;
 import org.uhanov.model.Staff;
 import org.uhanov.repository.api.StaffRepository;
 import org.uhanov.service.api.StaffService;
@@ -24,8 +24,8 @@ public class StaffServiceImpl implements StaffService {
     private final StaffMapper staffMapper;
 
     @Override
-    public StaffFullDTO create(StaffAuthDTO dto) {
-        return staffMapper.toFullDTO(
+    public StaffFullDto create(StaffAuthDto dto) {
+        return staffMapper.toFullDto(
                 repository.save(
                         staffMapper.authToModel(dto)
                 )
@@ -34,29 +34,28 @@ public class StaffServiceImpl implements StaffService {
 
     @Transactional(readOnly = true)
     @Override
-    public StaffFullDTO getById(UUID uuid) {
-        return staffMapper.toFullDTO(getEntityById(uuid));
+    public StaffFullDto getById(UUID uuid) {
+        return staffMapper.toFullDto(getEntityById(uuid));
     }
 
     @Override
-    public void update(StaffAuthDTO dto) {
+    public StaffFullDto update(StaffAuthDto dto) {
         Staff staff = getEntityById(dto.getId());
         staffMapper.updateStaff(dto, staff);
-        repository.save(staff);
+        return staffMapper.toFullDto(
+                repository.update(staff)
+        );
     }
 
     @Override
-    public boolean delete(UUID uuid) {
+    public void delete(UUID uuid) {
         repository.deleteById(uuid);
-        return true;
     }
 
     private Staff getEntityById(UUID uuid) {
-        System.out.println("QQQQQQQQQQQQ" + uuid);
-
         Optional<Staff> staff = repository.findById(uuid);
         return staff.orElseThrow(
-                EntityNotFoundException::new
+                ResourceNotFoundException::new
         );
     }
 }

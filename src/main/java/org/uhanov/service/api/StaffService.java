@@ -1,21 +1,21 @@
 package org.uhanov.service.api;
 
-import org.uhanov.dto.StaffAuthDTO;
-import org.uhanov.dto.StaffFullDTO;
+import org.uhanov.dto.staff.StaffAuthDto;
+import org.uhanov.dto.staff.StaffFullDto;
 
 import java.util.UUID;
 
 public interface StaffService {
 
-    StaffFullDTO create(StaffAuthDTO dto);
+    StaffFullDto create(StaffAuthDto dto);
 
 
-    StaffFullDTO getById(UUID uuid);
+    StaffFullDto getById(UUID uuid);
 
 
-    void update(StaffAuthDTO dto);
+    StaffFullDto update(StaffAuthDto dto);
 
 
-    boolean delete(UUID uuid);
+    void delete(UUID uuid);
 
 }

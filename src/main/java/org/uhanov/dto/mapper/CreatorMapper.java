@@ -2,21 +2,21 @@ package org.uhanov.dto.mapper;
 
 import org.mapstruct.*;
 import org.springframework.stereotype.Component;
-import org.uhanov.dto.CreatorAuthDTO;
-import org.uhanov.dto.CreatorDto;
+import org.uhanov.dto.creator.CreatorAuthDto;
+import org.uhanov.dto.creator.CreatorDto;
 import org.uhanov.model.Creator;
 
 @Mapper(componentModel = "spring")
 @Component
 public interface CreatorMapper {
 
-    @Mapping(target = "products", ignore = true)
-    CreatorDto toShortDto(Creator creator);
+    CreatorDto toDto(Creator creator);
 
-    Creator postDTOToModel(CreatorAuthDTO creatorAuthDTO);
+    Creator authToModel(CreatorAuthDto creatorAuthDto);
 
+    @Mapping(target = "id", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateCreator(CreatorAuthDTO dto, @MappingTarget Creator entity);
+    void updateCreator(CreatorAuthDto dto, @MappingTarget Creator entity);
 
 
 }

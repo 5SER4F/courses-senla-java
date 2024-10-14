@@ -1,52 +1,62 @@
 package org.uhanov.conroller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
-import org.uhanov.dto.UserAuthDTO;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.uhanov.dto.user.MoneyTransferDto;
+import org.uhanov.dto.user.UserAuthDto;
+import org.uhanov.dto.user.UserFullDto;
 import org.uhanov.service.api.UserService;
 
-import javax.validation.constraints.Positive;
 import java.util.UUID;
 
-@Controller
-@Data
+@RestController
+@RequestMapping(path = "/users")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService service;
     private final ObjectMapper objectMapper;
 
 
-    public Object add(UserAuthDTO dto) {
-        return writeAsString(service.create(dto));
+    @PostMapping()
+    public ResponseEntity<UserFullDto> create(
+            @RequestBody UserAuthDto dto
+    ) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(service.create(dto));
     }
 
 
-    public void update(UserAuthDTO dto) {
-        service.update(dto);
+    @PatchMapping("/{userId}")
+    public ResponseEntity<UserFullDto> update(
+            @PathVariable("userId") UUID uuid,
+            @RequestBody UserAuthDto dto) {
+        dto.setId(uuid);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(service.update(dto));
     }
 
-
-    public Object delete(UUID uuid) {
-        return service.delete(uuid) ? "200 OK" : "404 not found";
+    @DeleteMapping("/{userId}")
+    public ResponseEntity delete(@PathVariable("userId") UUID uuid) {
+        service.delete(uuid);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .build();
     }
 
-
-    public Object get(UUID uuid) {
-        return writeAsString(service.getById(uuid));
+    @GetMapping("/{userId}")
+    public ResponseEntity<UserFullDto> get(@PathVariable("userId") UUID uuid) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(service.getById(uuid));
     }
 
-    public void moneyTransfer(UUID senderId, UUID recipientId, @Positive double amount) {
-        service.moneyTransfer(senderId, recipientId, amount);
+    @PatchMapping("/{userId}/transfer")
+    public ResponseEntity moneyTransfer(@PathVariable("userId") UUID senderId,
+                                        @RequestBody MoneyTransferDto moneyTransferDto) {
+        service.moneyTransfer(senderId, moneyTransferDto);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .build();
     }
 
-    private String writeAsString(Object o) {
-        try {
-            return objectMapper.writeValueAsString(o);
-        } catch (JsonProcessingException e) {
-            return "500 Internal Server Error";
-        }
-    }
 }

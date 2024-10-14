@@ -2,8 +2,9 @@ package org.uhanov.dto.mapper;
 
 import org.mapstruct.*;
 import org.springframework.stereotype.Component;
-import org.uhanov.dto.UserAuthDTO;
-import org.uhanov.dto.UserFullDTO;
+import org.uhanov.dto.user.UserAuthDto;
+import org.uhanov.dto.user.UserFullDto;
+import org.uhanov.dto.user.UserShortDto;
 import org.uhanov.model.User;
 
 @Mapper(componentModel = "spring")
@@ -11,16 +12,15 @@ import org.uhanov.model.User;
 public interface UserMapper {
 
     @Mapping(target = "balance", defaultValue = "0.0")
-    User authToModel(UserAuthDTO dto);
+    User authToModel(UserAuthDto dto);
 
-    //    @Mapping(target = "userPurchase", ignore = true)
-    UserFullDTO toFullDto(User user);
+    UserFullDto toFullDto(User user);
 
-    UserAuthDTO toAuthDto(User user);
+    UserShortDto toShortDto(User user);
 
+    UserAuthDto toAuthDto(User user);
+
+    @Mapping(target = "id", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateUser(UserAuthDTO dto, @MappingTarget User target);
-
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateUser(User patch, @MappingTarget User target);
+    void updateUser(UserAuthDto dto, @MappingTarget User target);
 }

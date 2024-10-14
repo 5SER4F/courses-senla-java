@@ -1,49 +1,57 @@
 package org.uhanov.conroller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
-import org.uhanov.dto.ProductDTO;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.uhanov.dto.product.ProductDto;
+import org.uhanov.dto.product.ProductPostDto;
 import org.uhanov.service.api.ProductService;
 
 import java.util.UUID;
 
-@Controller
-@Data
+@RestController
+@RequestMapping(path = "/products")
 @RequiredArgsConstructor
 public class ProductController {
     private final ProductService service;
-    private final ObjectMapper objectMapper;
 
-
-    public Object add(ProductDTO dto) {
-        return writeAsString(service.create(dto));
+    @PostMapping()
+    public ResponseEntity<ProductDto> create(
+            @RequestBody ProductPostDto dto
+    ) {
+        ProductDto response = service.create(dto);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(response);
     }
 
 
-    public void update(ProductDTO dto) {
-        service.update(dto);
+    @PatchMapping("/{productId}")
+    public ResponseEntity<ProductDto> update(
+            @PathVariable("productId") UUID productId,
+            @RequestBody ProductPostDto dto
+    ) {
+        dto.setId(productId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(service.update(dto));
     }
 
 
-    public Object delete(UUID uuid) {
-        return service.delete(uuid) ? "200 OK" : "404 not found";
+    @DeleteMapping("/{productId}")
+    public ResponseEntity delete(
+            @PathVariable("productId") UUID productId
+    ) {
+        service.delete(productId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .build();
     }
 
-
-    public Object get(UUID uuid) {
-        return writeAsString(service.getById(uuid));
+    @GetMapping("/{productId}")
+    public ResponseEntity<ProductDto> get(
+            @PathVariable("productId") UUID productId
+    ) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(service.getById(productId));
     }
-
-    private String writeAsString(Object o) {
-        try {
-            return objectMapper.writeValueAsString(o);
-        } catch (JsonProcessingException e) {
-            return "500 Internal Server Error";
-        }
-    }
-
 
 }
