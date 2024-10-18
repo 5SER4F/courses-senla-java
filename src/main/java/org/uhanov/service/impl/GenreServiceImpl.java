@@ -58,7 +58,7 @@ public class GenreServiceImpl implements GenreService {
             );
         }
         return genreMapper.toDto(
-                repository.update(genre)
+                repository.save(genre)
         );
     }
 

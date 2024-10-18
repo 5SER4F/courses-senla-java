@@ -43,7 +43,7 @@ public class StaffServiceImpl implements StaffService {
         Staff staff = getEntityById(dto.getId());
         staffMapper.updateStaff(dto, staff);
         return staffMapper.toFullDto(
-                repository.update(staff)
+                repository.save(staff)
         );
     }
 

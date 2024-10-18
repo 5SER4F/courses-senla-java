@@ -94,7 +94,7 @@ public class StaffServiceMockTest {
                 .findById(staffUuid);
 
         verify(staffRepositoryMock, times(1))
-                .update(staff);
+                .save(staff);
 
         verify(creatorMapper, times(1))
                 .updateStaff(creatorAuthDto, staff);

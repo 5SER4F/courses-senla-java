@@ -97,7 +97,7 @@ public class CreatorServiceMockTest {
                 .findById(creatorUuid);
 
         verify(creatorRepositoryMock, times(1))
-                .update(creator);
+                .save(creator);
 
         verify(creatorMapper, times(1))
                 .updateCreator(creatorAuthDto, creator);

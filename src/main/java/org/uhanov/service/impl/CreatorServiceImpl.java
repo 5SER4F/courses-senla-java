@@ -45,7 +45,7 @@ public class CreatorServiceImpl implements CreatorService {
         Creator creator = get(creatorAuthDto.getId());
         creatorMapper.updateCreator(creatorAuthDto, creator);
         return creatorMapper.toDto(
-                repository.update(creator)
+                repository.save(creator)
         );
     }
 

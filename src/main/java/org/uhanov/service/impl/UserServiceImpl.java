@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
         User user = get(dto.getId());
         userMapper.updateUser(dto, user);
         return userMapper.toFullDto(
-                userRepository.update(user)
+                userRepository.save(user)
         );
     }
 

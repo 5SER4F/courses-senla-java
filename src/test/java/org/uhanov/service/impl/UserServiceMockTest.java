@@ -93,7 +93,7 @@ public class UserServiceMockTest {
                 .findById(userUuid);
 
         verify(userRepositoryMock, times(1))
-                .update(user);
+                .save(user);
 
         verify(userMapper, times(1))
                 .updateUser(userAuthDto, user);
