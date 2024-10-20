@@ -3,7 +3,7 @@ package org.uhanov.service.impl;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.uhanov.dto.creator.CreatorAuthDto;
+import org.uhanov.dto.creator.CreatorSignUpDto;
 import org.uhanov.dto.creator.CreatorDto;
 import org.uhanov.dto.mapper.CreatorMapper;
 import org.uhanov.dto.mapper.CreatorMapperImpl;
@@ -38,16 +38,16 @@ public class CreatorServiceMockTest {
     @Test
     public void whenCreate_thenRepositoryCallSave() {
         UUID creatorUuid = UUID.randomUUID();
-        CreatorAuthDto creatorAuthDto = CreatorAuthDto.builder()
+        CreatorSignUpDto creatorSignUpDto = CreatorSignUpDto.builder()
                 .build();
 
         when(creatorRepositoryMock.save(any(Creator.class)))
                 .thenReturn(Creator.builder()
                         .id(creatorUuid)
-                        .name(creatorAuthDto.getName())
+                        .name(creatorSignUpDto.getName())
                         .build());
 
-        CreatorDto afterCreate = creatorService.create(creatorAuthDto);
+        CreatorDto afterCreate = creatorService.create(creatorSignUpDto);
 
         assertEquals(afterCreate.getId(), creatorUuid);
 
@@ -76,7 +76,7 @@ public class CreatorServiceMockTest {
     public void whenUpdate_thenRepositoryCallFindByIdAnd() {
         UUID creatorUuid = UUID.randomUUID();
         CreatorMapper creatorMapper = mock(CreatorMapper.class);
-        CreatorAuthDto creatorAuthDto = CreatorAuthDto.builder()
+        CreatorSignUpDto creatorSignUpDto = CreatorSignUpDto.builder()
                 .id(creatorUuid)
                 .build();
 
@@ -91,7 +91,7 @@ public class CreatorServiceMockTest {
         when(creatorRepositoryMock.findById(creatorUuid))
                 .thenReturn(Optional.of(creator));
 
-        creatorService.update(creatorAuthDto);
+        creatorService.update(creatorSignUpDto);
 
         verify(creatorRepositoryMock, times(1))
                 .findById(creatorUuid);
@@ -100,7 +100,7 @@ public class CreatorServiceMockTest {
                 .save(creator);
 
         verify(creatorMapper, times(1))
-                .updateCreator(creatorAuthDto, creator);
+                .updateCreator(creatorSignUpDto, creator);
 
     }
 

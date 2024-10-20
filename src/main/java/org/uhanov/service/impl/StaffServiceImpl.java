@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.uhanov.dto.mapper.StaffMapper;
-import org.uhanov.dto.staff.StaffAuthDto;
+import org.uhanov.dto.staff.StaffSignUpDto;
 import org.uhanov.dto.staff.StaffFullDto;
 import org.uhanov.exception.ResourceNotFoundException;
 import org.uhanov.model.Staff;
@@ -24,7 +24,7 @@ public class StaffServiceImpl implements StaffService {
     private final StaffMapper staffMapper;
 
     @Override
-    public StaffFullDto create(StaffAuthDto dto) {
+    public StaffFullDto create(StaffSignUpDto dto) {
         return staffMapper.toFullDto(
                 repository.save(
                         staffMapper.authToModel(dto)
@@ -39,7 +39,7 @@ public class StaffServiceImpl implements StaffService {
     }
 
     @Override
-    public StaffFullDto update(StaffAuthDto dto) {
+    public StaffFullDto update(StaffSignUpDto dto) {
         Staff staff = getEntityById(dto.getId());
         staffMapper.updateStaff(dto, staff);
         return staffMapper.toFullDto(

@@ -8,6 +8,7 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 import org.springframework.web.servlet.DispatcherServlet;
 import org.uhanov.config.AppConfig;
 import org.uhanov.config.DispatcherConfig;
+import org.uhanov.config.SecurityConfig;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -20,7 +21,7 @@ public class WebAppInitializerConfig implements WebApplicationInitializer {
         AnnotationConfigWebApplicationContext rootContext =
                 new AnnotationConfigWebApplicationContext();
 
-        rootContext.register(AppConfig.class);
+        rootContext.register(AppConfig.class, SecurityConfig.class);
 
         container.addListener(new ContextLoaderListener(rootContext));
 

@@ -1,4 +1,4 @@
-package org.uhanov.dto.user;
+package org.uhanov.dto.staff;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 import org.uhanov.dto.serializer.LocalDateTimeDeserializer;
 import org.uhanov.dto.serializer.LocalDateTimeSerializer;
 
+import javax.validation.constraints.NotBlank;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -21,18 +22,17 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserAuthDto {
+public class StaffSignUpDto {
     private UUID id;
+    @NotBlank
     private String password;
-    private Double balance;
-    private String firstname;
+    @NotBlank
+    private String username;
     private String surname;
-    private String nickname;
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate birthDate;
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime registrationDate;
-    private String country;
 }

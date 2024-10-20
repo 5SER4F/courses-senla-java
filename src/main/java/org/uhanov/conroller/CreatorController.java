@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.uhanov.dto.creator.CreatorAuthDto;
+import org.uhanov.dto.creator.CreatorSignUpDto;
 import org.uhanov.dto.creator.CreatorDto;
 import org.uhanov.service.api.CreatorService;
 
@@ -16,9 +16,9 @@ import java.util.UUID;
 public class CreatorController {
     private final CreatorService service;
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<CreatorDto> create(
-            @RequestBody CreatorAuthDto dto
+            @RequestBody CreatorSignUpDto dto
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(service.create(dto));
@@ -28,7 +28,7 @@ public class CreatorController {
     @PatchMapping("/{creatorId}")
     public ResponseEntity<CreatorDto> update(
             @PathVariable("creatorId") UUID creatorId,
-            @RequestBody CreatorAuthDto dto
+            @RequestBody CreatorSignUpDto dto
     ) {
         dto.setId(creatorId);
         return ResponseEntity.status(HttpStatus.OK)

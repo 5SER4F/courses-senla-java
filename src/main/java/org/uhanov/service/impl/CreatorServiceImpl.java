@@ -4,7 +4,7 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.uhanov.dto.creator.CreatorAuthDto;
+import org.uhanov.dto.creator.CreatorSignUpDto;
 import org.uhanov.dto.creator.CreatorDto;
 import org.uhanov.dto.mapper.CreatorMapper;
 import org.uhanov.exception.ResourceNotFoundException;
@@ -25,10 +25,10 @@ public class CreatorServiceImpl implements CreatorService {
 
     @Transactional
     @Override
-    public CreatorDto create(CreatorAuthDto creatorAuthDto) {
+    public CreatorDto create(CreatorSignUpDto creatorSignUpDto) {
         return creatorMapper.toDto(
                 repository.save(
-                        creatorMapper.authToModel(creatorAuthDto)
+                        creatorMapper.authToModel(creatorSignUpDto)
                 )
         );
     }
@@ -41,9 +41,9 @@ public class CreatorServiceImpl implements CreatorService {
 
     @Transactional
     @Override
-    public CreatorDto update(CreatorAuthDto creatorAuthDto) {
-        Creator creator = get(creatorAuthDto.getId());
-        creatorMapper.updateCreator(creatorAuthDto, creator);
+    public CreatorDto update(CreatorSignUpDto creatorSignUpDto) {
+        Creator creator = get(creatorSignUpDto.getId());
+        creatorMapper.updateCreator(creatorSignUpDto, creator);
         return creatorMapper.toDto(
                 repository.save(creator)
         );

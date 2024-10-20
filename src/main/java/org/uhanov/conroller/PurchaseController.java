@@ -17,7 +17,7 @@ import java.util.UUID;
 public class PurchaseController {
     private final PurchaseService service;
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<PurchaseDto> create(
             @RequestBody @Valid PurchasePostDto dto
     ) {
