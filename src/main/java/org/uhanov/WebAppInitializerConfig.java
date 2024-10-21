@@ -6,6 +6,7 @@ import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
+import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 import org.uhanov.config.AppConfig;
 import org.uhanov.config.DispatcherConfig;
 import org.uhanov.config.SecurityConfig;
@@ -15,29 +16,44 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 
 @ComponentScan("org.uhanov")
-public class WebAppInitializerConfig implements WebApplicationInitializer {
+public class WebAppInitializerConfig extends AbstractAnnotationConfigDispatcherServletInitializer {
+//    @Override
+//    public void onStartup(ServletContext container) throws ServletException {
+//        AnnotationConfigWebApplicationContext rootContext =
+//                new AnnotationConfigWebApplicationContext();
+//
+//        rootContext.register(AppConfig.class, SecurityConfig.class);
+//
+//        container.addListener(new ContextLoaderListener(rootContext));
+//
+//
+//        AnnotationConfigWebApplicationContext dispatcherContext =
+//                new AnnotationConfigWebApplicationContext();
+//        dispatcherContext.register(DispatcherConfig.class);
+//
+//        dispatcherContext.getEnvironment()
+//                .getSystemProperties()
+//                .put(AbstractEnvironment.ACTIVE_PROFILES_PROPERTY_NAME, "default");
+//
+//        ServletRegistration.Dynamic dispatcher =
+//                container.addServlet("dispatcher", new DispatcherServlet(dispatcherContext));
+//        dispatcher.setLoadOnStartup(1);
+//        dispatcher.addMapping("/");
+//
+//    }
+
     @Override
-    public void onStartup(ServletContext container) throws ServletException {
-        AnnotationConfigWebApplicationContext rootContext =
-                new AnnotationConfigWebApplicationContext();
+    protected Class<?>[] getRootConfigClasses() {
+        return new Class[] {AppConfig.class};
+    }
 
-        rootContext.register(AppConfig.class, SecurityConfig.class);
+    @Override
+    protected Class<?>[] getServletConfigClasses() {
+        return new Class[]{DispatcherConfig.class, SecurityConfig.class};
+    }
 
-        container.addListener(new ContextLoaderListener(rootContext));
-
-
-        AnnotationConfigWebApplicationContext dispatcherContext =
-                new AnnotationConfigWebApplicationContext();
-        dispatcherContext.register(DispatcherConfig.class);
-
-        dispatcherContext.getEnvironment()
-                .getSystemProperties()
-                .put(AbstractEnvironment.ACTIVE_PROFILES_PROPERTY_NAME, "default");
-
-        ServletRegistration.Dynamic dispatcher =
-                container.addServlet("dispatcher", new DispatcherServlet(dispatcherContext));
-        dispatcher.setLoadOnStartup(1);
-        dispatcher.addMapping("/");
-
+    @Override
+    protected String[] getServletMappings() {
+        return new String[0];
     }
 }

@@ -4,13 +4,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.access.prepost.PreFilter;
 import org.springframework.web.bind.annotation.*;
 import org.uhanov.dto.JwtAuthenticationResponse;
 import org.uhanov.dto.SignInDto;
 import org.uhanov.dto.user.MoneyTransferDto;
-import org.uhanov.dto.user.UserSignUpDto;
 import org.uhanov.dto.user.UserFullDto;
+import org.uhanov.dto.user.UserSignUpDto;
 import org.uhanov.security.JwtAuthenticationFilter;
 import org.uhanov.service.api.UserService;
 
@@ -43,18 +46,20 @@ public class UserController {
                 .body(service.signIn(dto));
     }
 
-    @PreAuthorize("hasRole('USER')")
+//        @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAnyAuthority('USER')")
     @PatchMapping("/{userId}")
     public ResponseEntity<UserFullDto> update(
             @RequestHeader Map<String, String> headers,
             @PathVariable("userId") UUID uuid,
             @RequestBody UserSignUpDto dto) {
-        System.out.println("WWWWWWWWWWWWWWWW"+headers.get(JwtAuthenticationFilter.HEADER_NAME));
+        System.out.println("WWWWWWWWWWWWWWWW" + headers.get(JwtAuthenticationFilter.HEADER_NAME));
         dto.setId(uuid);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(service.update(dto));
     }
 
+    @PreAuthorize("hasAnyAuthority('USER')")
     @DeleteMapping("/{userId}")
     public ResponseEntity delete(@PathVariable("userId") UUID uuid) {
         service.delete(uuid);
@@ -62,12 +67,14 @@ public class UserController {
                 .build();
     }
 
+//    @PreAuthorize("hasAnyAuthority('USER')")
     @GetMapping("/{userId}")
     public ResponseEntity<UserFullDto> get(@PathVariable("userId") UUID uuid) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(service.getById(uuid));
     }
 
+    @PreAuthorize("hasAnyAuthority('USER')")
     @PatchMapping("/{userId}/transfer")
     public ResponseEntity moneyTransfer(@PathVariable("userId") UUID senderId,
                                         @RequestBody MoneyTransferDto moneyTransferDto) {

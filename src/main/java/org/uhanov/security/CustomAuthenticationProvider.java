@@ -6,6 +6,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.uhanov.exception.NoRoleException;
 import org.uhanov.exception.InvalidLoginException;
@@ -46,6 +47,19 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                 break;
         }
 
+//        var auth = new UsernamePasswordAuthenticationToken(
+//                userName,
+//                password,
+//                List.of(new SimpleGrantedAuthority(role.name()))
+//        );
+//
+//        var context = SecurityContextHolder.getContext();
+//
+//        System.out.println("CONTEXT=" + context);
+//
+//        context.setAuthentication(auth);
+//
+//        System.out.println("CONTEXTTTT=" + context);
 
         return new UsernamePasswordAuthenticationToken(
                 userName,
@@ -56,7 +70,10 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public boolean supports(Class<?> authentication) {
-        return authentication.equals(UsernamePasswordAuthenticationToken.class);
+        var b = authentication.isAssignableFrom(UsernamePasswordAuthenticationToken.class);
+
+        System.out.println(b+"KKKKKKKKKKKKKKKK\n" + authentication.getName());
+        return b;
     }
 
     private void authUser(String name, String password) {

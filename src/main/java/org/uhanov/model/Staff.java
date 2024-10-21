@@ -47,7 +47,11 @@ public class Staff implements UserDetails {
     @ToString.Exclude
     private Collection<Genre> genresAddedBy;
 
-    private final Role role = Role.STAFF;
+    private static final Role role = Role.STAFF;
+
+    public Role getRole() {
+        return role;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

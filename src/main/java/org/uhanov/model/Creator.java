@@ -36,7 +36,11 @@ public class Creator implements UserDetails {
     @ToString.Exclude
     private List<Product> products;
 
-    private final Role role = Role.CREATOR;
+    private static final Role role = Role.CREATOR;
+
+    public Role getRole() {
+        return role;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -54,7 +54,11 @@ public class User implements UserDetails {
     @ToString.Exclude
     private Set<Purchase> userPurchase;
 
-    private final Role role = Role.USER;
+    private static final Role role = Role.USER;
+
+    public Role getRole() {
+        return role;
+    }
 
     public double changeBalance(double transfer) {
         balance += transfer;
