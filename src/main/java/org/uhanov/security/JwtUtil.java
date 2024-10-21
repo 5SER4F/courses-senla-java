@@ -24,8 +24,8 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
     public static final long DEFAULT_EXPIRATION_TIME = 100000 * 60 * 24;
-//    @Value("${jwt.key}")
-    private String jwtSigningKey = "53A73E5F1C4E0A2D3B5F2D784E6A1B423D6F247D1F6E5C3A596D635A75327855";
+    @Value("${jwt.key}")
+    private String jwtSigningKey;
 
     public String extractUserName(String token) {
         return extractClaim(token, Claims::getSubject);

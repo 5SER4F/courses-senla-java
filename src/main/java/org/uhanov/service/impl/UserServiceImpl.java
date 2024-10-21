@@ -11,8 +11,8 @@ import org.uhanov.dto.JwtAuthenticationResponse;
 import org.uhanov.dto.SignInDto;
 import org.uhanov.dto.mapper.UserMapper;
 import org.uhanov.dto.user.MoneyTransferDto;
-import org.uhanov.dto.user.UserSignUpDto;
 import org.uhanov.dto.user.UserFullDto;
+import org.uhanov.dto.user.UserSignUpDto;
 import org.uhanov.exception.MoneyTransferException;
 import org.uhanov.exception.ResourceNotFoundException;
 import org.uhanov.model.User;
@@ -30,9 +30,7 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-
     private final JwtUtil jwtUtils;
-
     private final AuthenticationManager authenticationManager;
 
     @Transactional

@@ -1,5 +1,5 @@
 package org.uhanov.exception;
 
-public class NoRoleException extends RuntimeException{
+public class NoRoleException extends RuntimeException {
 
 }

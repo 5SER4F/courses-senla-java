@@ -3,12 +3,14 @@ package org.uhanov.service.impl;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.uhanov.dto.creator.CreatorSignUpDto;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.uhanov.dto.creator.CreatorDto;
+import org.uhanov.dto.creator.CreatorSignUpDto;
 import org.uhanov.dto.mapper.CreatorMapper;
 import org.uhanov.dto.mapper.CreatorMapperImpl;
 import org.uhanov.model.Creator;
 import org.uhanov.repository.api.CreatorRepository;
+import org.uhanov.security.JwtUtil;
 import org.uhanov.service.api.CreatorService;
 
 import java.util.Optional;
@@ -23,15 +25,22 @@ public class CreatorServiceMockTest {
     CreatorService creatorService;
     CreatorRepository creatorRepositoryMock;
     CreatorMapper creatorMapper;
+    JwtUtil jwtUtils;
+    AuthenticationManager authenticationManager;
 
     @BeforeEach
     public void init() {
         creatorMapper = new CreatorMapperImpl();
         creatorRepositoryMock = mock(CreatorRepository.class);
+        jwtUtils = mock(JwtUtil.class);
+        authenticationManager = mock(AuthenticationManager.class);
 
         creatorService = new CreatorServiceImpl(
                 creatorRepositoryMock,
-                creatorMapper
+                creatorMapper,
+                jwtUtils,
+                authenticationManager
+
         );
     }
 
@@ -84,7 +93,9 @@ public class CreatorServiceMockTest {
 
         CreatorService creatorService = new CreatorServiceImpl(
                 creatorRepositoryMock,
-                creatorMapper
+                creatorMapper,
+                jwtUtils,
+                authenticationManager
         );
 
 

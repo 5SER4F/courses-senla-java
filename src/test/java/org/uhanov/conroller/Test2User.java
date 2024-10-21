@@ -6,10 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
-import org.springframework.security.web.DefaultSecurityFilterChain;
-import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -48,13 +45,12 @@ public class Test2User {
     @Autowired
     public ObjectMapper objectMapper;
 
-    //    @Autowired
     public static MockMvc mvc;
 
-    private static UserFullDto addedUser;
+    public static UserFullDto addedUser;
     private static UserFullDto recipientUser;
 
-    private static String addedUserToken;
+    public static String addedUserToken;
 
     private static String recipientToken;
 
@@ -76,7 +72,6 @@ public class Test2User {
     @Test
     @Order(1)
     public void whenCreate_ThenReturn201AndSameUserWithId() {
-//        assertTrue(true);
         UserSignUpDto userSignUpDto = UserSignUpDto.builder()
                 .password(ADDED_USER_PASSWORD)
                 .firstname("John")
@@ -96,8 +91,6 @@ public class Test2User {
                     result.getResponse().getContentAsString(),
                     UserFullDto.class
             );
-
-            System.out.println(addedUser);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -130,41 +123,19 @@ public class Test2User {
             ).andReturn();
 
             assertEquals(200, result.getResponse().getStatus());
-            
-            
 
             addedUserToken = preToken(result.getResponse().getContentAsString());
-
-            System.out.println("QQQQQQQQ" + addedUserToken);
 
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException();
         }
-
-
-        System.out.println("SERVLET CONTEXT\n" +
-                wac.getBean(DefaultSecurityFilterChain.class).getFilters()
-        );
-
-        System.out.println("\n" +
-                wac.getBeansOfType(SecurityFilterChain.class).values()
-        );
-
-        var context = SecurityContextHolder.getContext();
-
-        System.out.println("CONTEXT=" + context);
-
     }
 
     @Test
     @Order(3)
     public void whenUpdate_thenReturn200() {
         try {
-            System.out.println(
-                    wac.getBean(JwtAuthenticationFilter.class)
-            );
-
             MvcResult result = mvc.perform(
                             MockMvcRequestBuilders.patch(
                                             PATH_PREFIX + "/" + addedUser.getId()
@@ -182,7 +153,6 @@ public class Test2User {
             throw new RuntimeException();
         }
     }
-
 
 
     @Test
@@ -212,7 +182,7 @@ public class Test2User {
             throw new RuntimeException();
         }
     }
-//
+
     @Test
     @Order(5)
     public void whenMoneyTransfer_ThenReturn204AndTransferMoney() {
@@ -266,7 +236,6 @@ public class Test2User {
             assertEquals(200, result.getResponse().getStatus());
 
 
-
             recipientToken = preToken(result.getResponse().getContentAsString());
 
 
@@ -296,6 +265,7 @@ public class Test2User {
             ).andReturn();
             assertEquals(HttpStatus.NO_CONTENT.value(), deleteResult.getResponse().getStatus());
 
+
             MvcResult getWithExceptionResult = mvc.perform(
                             MockMvcRequestBuilders.get(PATH_PREFIX +
                                             "/" + recipientUser.getId())
@@ -310,8 +280,7 @@ public class Test2User {
             throw new RuntimeException();
         }
     }
-//
-//
+
     public MvcResult createUser(UserSignUpDto dto) throws Exception {
         return mvc.perform(
                         MockMvcRequestBuilders.post(PATH_PREFIX)
@@ -330,7 +299,7 @@ public class Test2User {
                                 .accept(MediaType.APPLICATION_JSON))
                 .andReturn();
     }
-    
+
     private String preToken(String token) {
         token = token.substring(
                 token.indexOf(":") + 2,

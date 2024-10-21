@@ -2,9 +2,9 @@ package org.uhanov.dto.mapper;
 
 import org.mapstruct.*;
 import org.springframework.stereotype.Component;
-import org.uhanov.dto.user.UserSignUpDto;
 import org.uhanov.dto.user.UserFullDto;
 import org.uhanov.dto.user.UserShortDto;
+import org.uhanov.dto.user.UserSignUpDto;
 import org.uhanov.model.User;
 
 @Mapper(componentModel = "spring")

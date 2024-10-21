@@ -48,11 +48,7 @@ public class ProductServiceImpl implements ProductService {
                 creatorRepository.findById(dto.getCreatorId())
                         .orElseThrow(ResourceNotFoundException::new)
         );
-        System.out.println(newProduct.getGenres());
-        System.out.println(newProduct.getAgeRating());
-        System.out.println(newProduct.getCreator());
         repository.save(newProduct);
-
         return productMapper.toDto(
                 newProduct
         );

@@ -1,6 +1,6 @@
 package org.uhanov.exception;
 
-public class InvalidLoginException extends RuntimeException{
+public class InvalidLoginException extends RuntimeException {
     public InvalidLoginException() {
         super();
     }

@@ -32,4 +32,10 @@ public class ExceptionHandlerConfig {
     public String handlePurchaseException(final Exception e) {
         return "На счету у пользователя не достаточно средств для покупки" + e.getMessage();
     }
+
+    @ExceptionHandler({InvalidRoleException.class, InvalidLoginException.class})
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public String handleAuthException(final Exception e) {
+        return "Ошибка аутентификации" + e.getMessage();
+    }
 }

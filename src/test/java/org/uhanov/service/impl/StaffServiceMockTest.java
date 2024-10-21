@@ -2,12 +2,14 @@ package org.uhanov.service.impl;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.uhanov.dto.mapper.StaffMapper;
 import org.uhanov.dto.mapper.StaffMapperImpl;
-import org.uhanov.dto.staff.StaffSignUpDto;
 import org.uhanov.dto.staff.StaffFullDto;
+import org.uhanov.dto.staff.StaffSignUpDto;
 import org.uhanov.model.Staff;
 import org.uhanov.repository.api.StaffRepository;
+import org.uhanov.security.JwtUtil;
 import org.uhanov.service.api.StaffService;
 
 import java.util.Optional;
@@ -22,14 +24,21 @@ public class StaffServiceMockTest {
     StaffRepository staffRepositoryMock;
     StaffMapper staffMapper;
 
+    JwtUtil jwtUtils;
+    AuthenticationManager authenticationManager;
+
     @BeforeEach
     public void init() {
         staffRepositoryMock = mock(StaffRepository.class);
         staffMapper = new StaffMapperImpl();
+        jwtUtils = mock(JwtUtil.class);
+        authenticationManager = mock(AuthenticationManager.class);
 
         staffService = new StaffServiceImpl(
                 staffRepositoryMock,
-                staffMapper
+                staffMapper,
+                jwtUtils,
+                authenticationManager
         );
     }
 
@@ -81,7 +90,9 @@ public class StaffServiceMockTest {
 
         StaffService staffService = new StaffServiceImpl(
                 staffRepositoryMock,
-                creatorMapper
+                creatorMapper,
+                jwtUtils,
+                authenticationManager
         );
 
 

@@ -3,6 +3,7 @@ package org.uhanov.conroller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.uhanov.dto.purchase.PurchaseDto;
 import org.uhanov.dto.purchase.PurchasePostDto;
@@ -17,6 +18,7 @@ import java.util.UUID;
 public class PurchaseController {
     private final PurchaseService service;
 
+    @PreAuthorize("hasAnyAuthority('USER')")
     @PostMapping
     public ResponseEntity<PurchaseDto> create(
             @RequestBody @Valid PurchasePostDto dto
@@ -25,6 +27,7 @@ public class PurchaseController {
                 .body(service.create(dto));
     }
 
+    @PreAuthorize("hasAnyAuthority('STAFF')")
     @DeleteMapping("/{purchaseId}")
     public ResponseEntity delete(
             @PathVariable("purchaseId") UUID purchaseId
@@ -35,6 +38,7 @@ public class PurchaseController {
     }
 
 
+    @PreAuthorize("hasAnyAuthority('USER', 'STAFF')")
     @GetMapping("/{purchaseId}")
     public ResponseEntity<PurchaseDto> get(
             @PathVariable("purchaseId") UUID purchaseId

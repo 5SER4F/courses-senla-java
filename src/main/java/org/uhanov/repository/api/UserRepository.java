@@ -10,15 +10,14 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, UUID>
-// CrudRepository<User>
-{
+public interface UserRepository extends JpaRepository<User, UUID> {
     Optional<User> findByNickname(String nickname);
 
     default UserDetails findUserDetailsByNickname(String name) {
         return findByNickname(name)
                 .orElseThrow(ResourceNotFoundException::new);
     }
+
     boolean existsByNickname(String nickname);
 
 }

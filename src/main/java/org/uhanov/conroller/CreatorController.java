@@ -4,8 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.uhanov.dto.creator.CreatorSignUpDto;
+import org.uhanov.dto.JwtAuthenticationResponse;
+import org.uhanov.dto.SignInDto;
 import org.uhanov.dto.creator.CreatorDto;
+import org.uhanov.dto.creator.CreatorSignUpDto;
 import org.uhanov.service.api.CreatorService;
 
 import java.util.UUID;
@@ -24,6 +26,13 @@ public class CreatorController {
                 .body(service.create(dto));
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<JwtAuthenticationResponse> signIn(
+            @RequestBody SignInDto dto
+    ) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(service.signIn(dto));
+    }
 
     @PatchMapping("/{creatorId}")
     public ResponseEntity<CreatorDto> update(
