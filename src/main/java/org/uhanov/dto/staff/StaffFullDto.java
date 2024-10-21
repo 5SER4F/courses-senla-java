@@ -23,7 +23,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class StaffFullDto {
     private UUID id;
-    private String firstname;
+    private String username;
     private String surname;
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonDeserialize(using = LocalDateDeserializer.class)

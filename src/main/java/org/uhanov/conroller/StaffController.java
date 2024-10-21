@@ -1,12 +1,14 @@
 package org.uhanov.conroller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.uhanov.dto.staff.StaffAuthDto;
+import org.uhanov.dto.JwtAuthenticationResponse;
+import org.uhanov.dto.SignInDto;
 import org.uhanov.dto.staff.StaffFullDto;
+import org.uhanov.dto.staff.StaffSignUpDto;
 import org.uhanov.service.api.StaffService;
 
 import java.util.UUID;
@@ -16,29 +18,36 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class StaffController {
     private final StaffService service;
-    private final ObjectMapper objectMapper;
 
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<StaffFullDto> create(
-            @RequestBody StaffAuthDto dto
+            @RequestBody StaffSignUpDto dto
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(service.create(dto));
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<JwtAuthenticationResponse> signIn(
+            @RequestBody SignInDto dto
+    ) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(service.signIn(dto));
+    }
 
+    @PreAuthorize("hasAnyAuthority('STAFF')")
     @PatchMapping("/{staffId}")
     public ResponseEntity<StaffFullDto> update(
             @PathVariable("staffId") UUID staffId,
-            @RequestBody StaffAuthDto dto
+            @RequestBody StaffSignUpDto dto
     ) {
         dto.setId(staffId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(service.update(dto));
     }
 
-
+    @PreAuthorize("hasAnyAuthority('STAFF')")
     @DeleteMapping("/{staffId}")
     public ResponseEntity delete(
             @PathVariable("staffId") UUID staffId

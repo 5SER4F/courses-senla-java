@@ -115,7 +115,7 @@ public class ProductServiceMockTest {
     public void whenGetById_thenRepositoryCallFind() {
         final UUID productId = UUID.randomUUID();
 
-        when(productRepositoryMock.findByIdEager(productId))
+        when(productRepositoryMock.findById(productId))
                 .thenReturn(Optional.of(Product.builder().id(productId).build()));
 
         ProductDto afterGet = productService.getById(productId);
@@ -123,7 +123,7 @@ public class ProductServiceMockTest {
         assertEquals(afterGet.getId(), productId);
 
         verify(productRepositoryMock, times(1))
-                .findByIdEager(productId);
+                .findById(productId);
 
 
     }
@@ -164,7 +164,7 @@ public class ProductServiceMockTest {
         productService.update(productPostDto);
 
         verify(productRepositoryMock, times(1))
-                .update(any(Product.class));
+                .save(any(Product.class));
 
         verify(genreRepositoryMock, times(1))
                 .getGenresByIds(anyList());

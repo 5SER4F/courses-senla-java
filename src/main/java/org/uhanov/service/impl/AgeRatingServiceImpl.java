@@ -59,7 +59,7 @@ public class AgeRatingServiceImpl implements AgeRatingService {
             );
         }
         return ageRatingMapper.toDto(
-                repository.update(ageRating)
+                repository.save(ageRating)
         );
     }
 

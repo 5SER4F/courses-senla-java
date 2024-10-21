@@ -48,7 +48,7 @@ public class GenreServiceMockTest {
 
         Staff staff = Staff.builder()
                 .id(UUID.randomUUID())
-                .firstname("name")
+                .username("name")
                 .build();
 
         when(genreRepositoryMock.save(any(Genre.class)))

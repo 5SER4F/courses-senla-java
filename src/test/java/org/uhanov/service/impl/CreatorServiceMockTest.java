@@ -3,12 +3,14 @@ package org.uhanov.service.impl;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.uhanov.dto.creator.CreatorAuthDto;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.uhanov.dto.creator.CreatorDto;
+import org.uhanov.dto.creator.CreatorSignUpDto;
 import org.uhanov.dto.mapper.CreatorMapper;
 import org.uhanov.dto.mapper.CreatorMapperImpl;
 import org.uhanov.model.Creator;
 import org.uhanov.repository.api.CreatorRepository;
+import org.uhanov.security.JwtUtil;
 import org.uhanov.service.api.CreatorService;
 
 import java.util.Optional;
@@ -23,31 +25,38 @@ public class CreatorServiceMockTest {
     CreatorService creatorService;
     CreatorRepository creatorRepositoryMock;
     CreatorMapper creatorMapper;
+    JwtUtil jwtUtils;
+    AuthenticationManager authenticationManager;
 
     @BeforeEach
     public void init() {
         creatorMapper = new CreatorMapperImpl();
         creatorRepositoryMock = mock(CreatorRepository.class);
+        jwtUtils = mock(JwtUtil.class);
+        authenticationManager = mock(AuthenticationManager.class);
 
         creatorService = new CreatorServiceImpl(
                 creatorRepositoryMock,
-                creatorMapper
+                creatorMapper,
+                jwtUtils,
+                authenticationManager
+
         );
     }
 
     @Test
     public void whenCreate_thenRepositoryCallSave() {
         UUID creatorUuid = UUID.randomUUID();
-        CreatorAuthDto creatorAuthDto = CreatorAuthDto.builder()
+        CreatorSignUpDto creatorSignUpDto = CreatorSignUpDto.builder()
                 .build();
 
         when(creatorRepositoryMock.save(any(Creator.class)))
                 .thenReturn(Creator.builder()
                         .id(creatorUuid)
-                        .name(creatorAuthDto.getName())
+                        .name(creatorSignUpDto.getName())
                         .build());
 
-        CreatorDto afterCreate = creatorService.create(creatorAuthDto);
+        CreatorDto afterCreate = creatorService.create(creatorSignUpDto);
 
         assertEquals(afterCreate.getId(), creatorUuid);
 
@@ -76,7 +85,7 @@ public class CreatorServiceMockTest {
     public void whenUpdate_thenRepositoryCallFindByIdAnd() {
         UUID creatorUuid = UUID.randomUUID();
         CreatorMapper creatorMapper = mock(CreatorMapper.class);
-        CreatorAuthDto creatorAuthDto = CreatorAuthDto.builder()
+        CreatorSignUpDto creatorSignUpDto = CreatorSignUpDto.builder()
                 .id(creatorUuid)
                 .build();
 
@@ -84,23 +93,25 @@ public class CreatorServiceMockTest {
 
         CreatorService creatorService = new CreatorServiceImpl(
                 creatorRepositoryMock,
-                creatorMapper
+                creatorMapper,
+                jwtUtils,
+                authenticationManager
         );
 
 
         when(creatorRepositoryMock.findById(creatorUuid))
                 .thenReturn(Optional.of(creator));
 
-        creatorService.update(creatorAuthDto);
+        creatorService.update(creatorSignUpDto);
 
         verify(creatorRepositoryMock, times(1))
                 .findById(creatorUuid);
 
         verify(creatorRepositoryMock, times(1))
-                .update(creator);
+                .save(creator);
 
         verify(creatorMapper, times(1))
-                .updateCreator(creatorAuthDto, creator);
+                .updateCreator(creatorSignUpDto, creator);
 
     }
 

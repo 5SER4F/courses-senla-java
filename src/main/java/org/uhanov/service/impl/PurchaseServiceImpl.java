@@ -47,7 +47,7 @@ public class PurchaseServiceImpl implements PurchaseService {
                     "trying create purchase on more money than have");
         }
         buyer.setBalance(balanceAfterBuy);
-        userRepository.update(buyer);
+        userRepository.save(buyer);
 
         Purchase newPurchase = purchaseMapper.toModel(dto);
         newPurchase.setBuyer(buyer);

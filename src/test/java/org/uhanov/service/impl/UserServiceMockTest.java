@@ -2,12 +2,14 @@ package org.uhanov.service.impl;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.uhanov.dto.mapper.UserMapper;
 import org.uhanov.dto.mapper.UserMapperImpl;
-import org.uhanov.dto.user.UserAuthDto;
 import org.uhanov.dto.user.UserFullDto;
+import org.uhanov.dto.user.UserSignUpDto;
 import org.uhanov.model.User;
 import org.uhanov.repository.api.UserRepository;
+import org.uhanov.security.JwtUtil;
 import org.uhanov.service.api.UserService;
 
 import java.util.Optional;
@@ -23,19 +25,26 @@ public class UserServiceMockTest {
     UserRepository userRepositoryMock;
     UserMapper userMapper;
 
+    JwtUtil jwtUtilMock;
+
+    AuthenticationManager authenticationManagerMock;
+
 
     @BeforeEach
     public void init() {
         userRepositoryMock = mock(UserRepository.class);
         userMapper = new UserMapperImpl();
 
-        userService = new UserServiceImpl(userRepositoryMock, userMapper);
+        jwtUtilMock = mock(JwtUtil.class);
+        authenticationManagerMock = mock(AuthenticationManager.class);
+
+        userService = new UserServiceImpl(userRepositoryMock, userMapper, jwtUtilMock, authenticationManagerMock);
     }
 
     @Test
     public void whenCreate_thenRepositoryCallSave() {
         UUID userUuid = UUID.randomUUID();
-        UserAuthDto userAuthDto = UserAuthDto.builder()
+        UserSignUpDto userSignUpDto = UserSignUpDto.builder()
                 .build();
 
         when(userRepositoryMock.save(any(User.class)))
@@ -43,7 +52,7 @@ public class UserServiceMockTest {
                         .id(userUuid)
                         .build());
 
-        UserFullDto afterCreate = userService.create(userAuthDto);
+        UserFullDto afterCreate = userService.create(userSignUpDto);
 
         assertEquals(afterCreate.getId(), userUuid);
 
@@ -72,7 +81,7 @@ public class UserServiceMockTest {
     public void whenUpdate_thenRepositoryCallFindByIdAnd() {
         UUID userUuid = UUID.randomUUID();
         UserMapper userMapper = mock(UserMapper.class);
-        UserAuthDto userAuthDto = UserAuthDto.builder()
+        UserSignUpDto userSignUpDto = UserSignUpDto.builder()
                 .id(userUuid)
                 .build();
 
@@ -80,23 +89,25 @@ public class UserServiceMockTest {
 
         UserService userService = new UserServiceImpl(
                 userRepositoryMock,
-                userMapper
+                userMapper,
+                jwtUtilMock,
+                authenticationManagerMock
         );
 
 
         when(userRepositoryMock.findById(userUuid))
                 .thenReturn(Optional.of(user));
 
-        userService.update(userAuthDto);
+        userService.update(userSignUpDto);
 
         verify(userRepositoryMock, times(1))
                 .findById(userUuid);
 
         verify(userRepositoryMock, times(1))
-                .update(user);
+                .save(user);
 
         verify(userMapper, times(1))
-                .updateUser(userAuthDto, user);
+                .updateUser(userSignUpDto, user);
 
     }
 

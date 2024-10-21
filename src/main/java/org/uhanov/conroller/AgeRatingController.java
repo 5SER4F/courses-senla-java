@@ -16,7 +16,7 @@ import java.util.UUID;
 public class AgeRatingController {
     private final AgeRatingService service;
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<AgeRatingDto> create(
             @RequestBody AgeRatingPostDto dto
     ) {

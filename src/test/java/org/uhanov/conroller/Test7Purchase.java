@@ -6,7 +6,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import org.springframework.test.web.servlet.MockMvc;
@@ -15,21 +17,25 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import org.uhanov.WebAppInitializerTestConfig;
+import org.uhanov.SecurityWebApplicationTestInitializer;
+import org.uhanov.config.SecurityTestConfig;
+import org.uhanov.dto.SignInDto;
 import org.uhanov.dto.agerating.AgeRatingDto;
 import org.uhanov.dto.agerating.AgeRatingPostDto;
-import org.uhanov.dto.creator.CreatorAuthDto;
 import org.uhanov.dto.creator.CreatorDto;
+import org.uhanov.dto.creator.CreatorSignUpDto;
 import org.uhanov.dto.genre.GenreDto;
 import org.uhanov.dto.genre.GenrePostDto;
 import org.uhanov.dto.product.ProductDto;
 import org.uhanov.dto.product.ProductPostDto;
 import org.uhanov.dto.purchase.PurchaseDto;
 import org.uhanov.dto.purchase.PurchasePostDto;
-import org.uhanov.dto.staff.StaffAuthDto;
 import org.uhanov.dto.staff.StaffFullDto;
-import org.uhanov.dto.user.UserAuthDto;
+import org.uhanov.dto.staff.StaffSignUpDto;
 import org.uhanov.dto.user.UserFullDto;
+import org.uhanov.dto.user.UserSignUpDto;
+import org.uhanov.security.JwtAuthenticationFilter;
+import org.uhanov.security.Role;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -40,7 +46,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 @ExtendWith(SpringExtension.class)
-@SpringJUnitWebConfig(value = WebAppInitializerTestConfig.class)
+@SpringJUnitWebConfig(value = SecurityWebApplicationTestInitializer.class)
+@ContextConfiguration(classes = SecurityTestConfig.class)
 @ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class Test7Purchase {
@@ -65,25 +72,30 @@ public class Test7Purchase {
 
     private static CreatorDto addedCreator;
 
+    public static String addedUserToken;
+
+    public static String addedStaffToken;
+
     public static final String PATH_PREFIX = "/purchases";
 
     @BeforeEach
     public void init() {
         mvc = MockMvcBuilders.webAppContextSetup(wac)
+                .apply(SecurityMockMvcConfigurers.springSecurity())
                 .build();
 
         if (addedStaff == null) {
             try {
-                StaffAuthDto staffAuthDto = StaffAuthDto.builder()
+                StaffSignUpDto staffSignUpDto = StaffSignUpDto.builder()
                         .password("password123")
-                        .firstname("John")
+                        .username("PURCH_STAFF")
                         .surname("Doe")
                         .birthDate(LocalDate.of(1990, 1, 1))
                         .registrationDate(LocalDateTime.now())
                         .build();
                 MvcResult result = mvc.perform(MockMvcRequestBuilders.post(Test1Staff.PATH_PREFIX)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(staffAuthDto)))
+                                .content(objectMapper.writeValueAsString(staffSignUpDto)))
                         .andReturn();
 
                 assertEquals(result.getResponse().getStatus(), HttpStatus.CREATED.value());
@@ -93,15 +105,15 @@ public class Test7Purchase {
                         StaffFullDto.class
                 );
 
-                CreatorAuthDto creatorAuthDto = CreatorAuthDto.builder()
+                CreatorSignUpDto creatorSignUpDto = CreatorSignUpDto.builder()
                         .password("password123")
-                        .name("CreatorName")
+                        .name("PURCH_CREATOR")
                         .registrationDate(LocalDateTime.now())
                         .build();
 
                 MvcResult result4 = mvc.perform(MockMvcRequestBuilders.post(Test6Creator.PATH_PREFIX)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(creatorAuthDto)))
+                                .content(objectMapper.writeValueAsString(creatorSignUpDto)))
                         .andReturn();
 
                 assertEquals(result4.getResponse().getStatus(), HttpStatus.CREATED.value());
@@ -112,7 +124,7 @@ public class Test7Purchase {
                 );
 
                 GenrePostDto genrePostDto = GenrePostDto.builder()
-                        .name("genre")
+                        .name("PURCH_GENRE")
                         .lastChangerId(addedStaff.getId())
                         .build();
 
@@ -128,7 +140,7 @@ public class Test7Purchase {
                 );
 
                 AgeRatingPostDto ageRatingPostDto = AgeRatingPostDto.builder()
-                        .name("ageRating")
+                        .name("PURCH_AR")
                         .lastChangerId(addedStaff.getId())
                         .build();
 
@@ -145,17 +157,16 @@ public class Test7Purchase {
 
 
                 ProductPostDto productPostDto = ProductPostDto.builder()
-                        .name("ProductName")
+                        .name("PURCH_PRODUCT")
                         .dateAdded(LocalDate.now())
-                        .price(Test4Produc.PRICE)
-                        .discount(Test4Produc.DISCOUNT)
+                        .price(Test4Product.PRICE)
+                        .discount(Test4Product.DISCOUNT)
                         .creatorId(addedCreator.getId())
                         .ageRatingId(addedAgeRating.getId())
                         .genresIds(Set.of(addedGenre.getId()))
                         .build();
 
-                System.out.println(objectMapper.writeValueAsString(productPostDto));
-                MvcResult result6 = mvc.perform(MockMvcRequestBuilders.post(Test4Produc.PATH_PREFIX)
+                MvcResult result6 = mvc.perform(MockMvcRequestBuilders.post(Test4Product.PATH_PREFIX)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(productPostDto)))
                         .andReturn();
@@ -168,11 +179,11 @@ public class Test7Purchase {
                         ProductDto.class
                 );
 
-                UserAuthDto userAuthDto = UserAuthDto.builder()
+                UserSignUpDto userSignUpDto = UserSignUpDto.builder()
                         .password("password")
                         .firstname("John")
                         .surname("Doe")
-                        .nickname("johndoe")
+                        .nickname("PURCH_USER")
                         .birthDate(LocalDate.of(1990, 1, 1))
                         .registrationDate(LocalDateTime.now())
                         .country("USA")
@@ -182,7 +193,7 @@ public class Test7Purchase {
                 MvcResult result7 = mvc.perform(
                                 MockMvcRequestBuilders.post(Test2User.PATH_PREFIX)
                                         .contentType(MediaType.APPLICATION_JSON)
-                                        .content(objectMapper.writeValueAsString(userAuthDto))
+                                        .content(objectMapper.writeValueAsString(userSignUpDto))
                         )
                         .andReturn();
 
@@ -192,6 +203,43 @@ public class Test7Purchase {
                         result7.getResponse().getContentAsString(),
                         UserFullDto.class
                 );
+
+
+                SignInDto signInDto = SignInDto.builder()
+                        .username(addedUser.getNickname())
+                        .password(userSignUpDto.getPassword())
+                        .role(Role.USER.name())
+                        .build();
+                MvcResult userTokenResult = mvc.perform(
+                        MockMvcRequestBuilders.post(
+                                        Test2User.PATH_PREFIX + "/" + "/login"
+                                )
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(signInDto))
+                ).andReturn();
+
+                assertEquals(200, userTokenResult.getResponse().getStatus());
+
+                addedUserToken = preToken(userTokenResult.getResponse().getContentAsString());
+
+
+                SignInDto signInStaffDto = SignInDto.builder()
+                        .username(addedStaff.getUsername())
+                        .password(staffSignUpDto.getPassword())
+                        .role(Role.STAFF.name())
+                        .build();
+
+                MvcResult staffTokenResult = mvc.perform(
+                        MockMvcRequestBuilders.post(
+                                        Test1Staff.PATH_PREFIX + "/" + "/login"
+                                )
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(signInStaffDto))
+                ).andReturn();
+                assertEquals(200, staffTokenResult.getResponse().getStatus());
+
+                addedStaffToken = preToken(staffTokenResult.getResponse().getContentAsString());
+
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -212,9 +260,9 @@ public class Test7Purchase {
                     .cost(BigDecimal.valueOf(100))
                     .build();
 
-            System.out.println("QQQQQQQ" + purchasePostDto);
 
             MvcResult result = mvc.perform(MockMvcRequestBuilders.post(PATH_PREFIX)
+                            .header(JwtAuthenticationFilter.HEADER_NAME, addedUserToken)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(purchasePostDto)))
                     .andReturn();
@@ -244,6 +292,7 @@ public class Test7Purchase {
             MvcResult result = mvc.perform(
                             MockMvcRequestBuilders.get(PATH_PREFIX + "/" + addedPurchase.getId()
                                     )
+                                    .header(JwtAuthenticationFilter.HEADER_NAME, addedUserToken)
                                     .accept(MediaType.APPLICATION_JSON))
                     .andExpect(MockMvcResultMatchers.status().isOk())
                     .andReturn();
@@ -263,34 +312,21 @@ public class Test7Purchase {
     }
 
     @Test
-    @Order(4)
+    @Order(3)
     public void whenDelete_thenReturn204After404() {
         try {
-            PurchasePostDto purchasePostDto = PurchasePostDto.builder()
-                    .buyerId(addedUser.getId())
-                    .productId(addedProduct.getId())
-                    .purchaseDate(LocalDateTime.now())
-                    .build();
-
-            MvcResult toDelete = mvc.perform(MockMvcRequestBuilders.post(PATH_PREFIX)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(purchasePostDto)))
-                    .andExpect(MockMvcResultMatchers.status().isCreated())
-                    .andReturn();
-
             MvcResult deleteResult = mvc.perform(
                             MockMvcRequestBuilders.delete(PATH_PREFIX + "/" +
-                                            objectMapper.readValue(toDelete.getResponse().getContentAsString(),
-                                                    PurchaseDto.class).getId())
+                                            addedPurchase.getId())
                                     .accept(MediaType.APPLICATION_JSON)
+                                    .header(JwtAuthenticationFilter.HEADER_NAME, addedStaffToken)
                     ).andExpect(MockMvcResultMatchers.status().isNoContent())
                     .andReturn();
 
             MvcResult result = mvc.perform(
                             MockMvcRequestBuilders.get(PATH_PREFIX + "/" +
-                                            objectMapper.readValue(toDelete.getResponse().getContentAsString(),
-                                                    PurchaseDto.class).getId()
-                                    )
+                                            addedPurchase.getId())
+                                    .header(JwtAuthenticationFilter.HEADER_NAME, addedStaffToken)
                                     .accept(MediaType.APPLICATION_JSON))
                     .andExpect(MockMvcResultMatchers.status().isNotFound())
                     .andReturn();
@@ -299,6 +335,14 @@ public class Test7Purchase {
             e.printStackTrace();
             throw new RuntimeException();
         }
+    }
+
+    private String preToken(String token) {
+        token = token.substring(
+                token.indexOf(":") + 2,
+                token.length() - 2
+        );
+        return JwtAuthenticationFilter.BEARER_PREFIX + token;
 
     }
 }

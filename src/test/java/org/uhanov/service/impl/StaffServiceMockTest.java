@@ -2,12 +2,14 @@ package org.uhanov.service.impl;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.uhanov.dto.mapper.StaffMapper;
 import org.uhanov.dto.mapper.StaffMapperImpl;
-import org.uhanov.dto.staff.StaffAuthDto;
 import org.uhanov.dto.staff.StaffFullDto;
+import org.uhanov.dto.staff.StaffSignUpDto;
 import org.uhanov.model.Staff;
 import org.uhanov.repository.api.StaffRepository;
+import org.uhanov.security.JwtUtil;
 import org.uhanov.service.api.StaffService;
 
 import java.util.Optional;
@@ -22,21 +24,28 @@ public class StaffServiceMockTest {
     StaffRepository staffRepositoryMock;
     StaffMapper staffMapper;
 
+    JwtUtil jwtUtils;
+    AuthenticationManager authenticationManager;
+
     @BeforeEach
     public void init() {
         staffRepositoryMock = mock(StaffRepository.class);
         staffMapper = new StaffMapperImpl();
+        jwtUtils = mock(JwtUtil.class);
+        authenticationManager = mock(AuthenticationManager.class);
 
         staffService = new StaffServiceImpl(
                 staffRepositoryMock,
-                staffMapper
+                staffMapper,
+                jwtUtils,
+                authenticationManager
         );
     }
 
     @Test
     public void whenCreate_thenRepositoryCallSave() {
         final UUID staffUuid = UUID.randomUUID();
-        StaffAuthDto staffAuthDto = StaffAuthDto.builder()
+        StaffSignUpDto staffSignUpDto = StaffSignUpDto.builder()
                 .build();
 
         when(staffRepositoryMock.save(any(Staff.class)))
@@ -44,7 +53,7 @@ public class StaffServiceMockTest {
                         .id(staffUuid)
                         .build());
 
-        StaffFullDto afterCreate = staffService.create(staffAuthDto);
+        StaffFullDto afterCreate = staffService.create(staffSignUpDto);
 
         assertEquals(afterCreate.getId(), staffUuid);
 
@@ -73,7 +82,7 @@ public class StaffServiceMockTest {
     public void whenUpdate_thenRepositoryCallFindByIdAnd() {
         final UUID staffUuid = UUID.randomUUID();
         StaffMapper creatorMapper = mock(StaffMapper.class);
-        StaffAuthDto creatorAuthDto = StaffAuthDto.builder()
+        StaffSignUpDto creatorAuthDto = StaffSignUpDto.builder()
                 .id(staffUuid)
                 .build();
 
@@ -81,7 +90,9 @@ public class StaffServiceMockTest {
 
         StaffService staffService = new StaffServiceImpl(
                 staffRepositoryMock,
-                creatorMapper
+                creatorMapper,
+                jwtUtils,
+                authenticationManager
         );
 
 
@@ -94,7 +105,7 @@ public class StaffServiceMockTest {
                 .findById(staffUuid);
 
         verify(staffRepositoryMock, times(1))
-                .update(staff);
+                .save(staff);
 
         verify(creatorMapper, times(1))
                 .updateStaff(creatorAuthDto, staff);

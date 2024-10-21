@@ -1,15 +1,18 @@
 package org.uhanov.conroller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.uhanov.dto.JwtAuthenticationResponse;
+import org.uhanov.dto.SignInDto;
 import org.uhanov.dto.user.MoneyTransferDto;
-import org.uhanov.dto.user.UserAuthDto;
 import org.uhanov.dto.user.UserFullDto;
+import org.uhanov.dto.user.UserSignUpDto;
 import org.uhanov.service.api.UserService;
 
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -17,27 +20,36 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService service;
-    private final ObjectMapper objectMapper;
 
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<UserFullDto> create(
-            @RequestBody UserAuthDto dto
+            @RequestBody UserSignUpDto dto
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(service.create(dto));
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<JwtAuthenticationResponse> signIn(
+            @RequestBody SignInDto dto
+    ) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(service.signIn(dto));
+    }
 
+    @PreAuthorize("hasAnyAuthority('USER')")
     @PatchMapping("/{userId}")
     public ResponseEntity<UserFullDto> update(
+            @RequestHeader Map<String, String> headers,
             @PathVariable("userId") UUID uuid,
-            @RequestBody UserAuthDto dto) {
+            @RequestBody UserSignUpDto dto) {
         dto.setId(uuid);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(service.update(dto));
     }
 
+    @PreAuthorize("hasAnyAuthority('USER')")
     @DeleteMapping("/{userId}")
     public ResponseEntity delete(@PathVariable("userId") UUID uuid) {
         service.delete(uuid);
@@ -51,6 +63,7 @@ public class UserController {
                 .body(service.getById(uuid));
     }
 
+    @PreAuthorize("hasAnyAuthority('USER')")
     @PatchMapping("/{userId}/transfer")
     public ResponseEntity moneyTransfer(@PathVariable("userId") UUID senderId,
                                         @RequestBody MoneyTransferDto moneyTransferDto) {

@@ -16,7 +16,7 @@ import java.util.UUID;
 public class GenreController {
     private final GenreService service;
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<GenreDto> create(
             @RequestBody GenrePostDto dto
     ) {

@@ -48,11 +48,7 @@ public class ProductServiceImpl implements ProductService {
                 creatorRepository.findById(dto.getCreatorId())
                         .orElseThrow(ResourceNotFoundException::new)
         );
-        System.out.println(newProduct.getGenres());
-        System.out.println(newProduct.getAgeRating());
-        System.out.println(newProduct.getCreator());
         repository.save(newProduct);
-
         return productMapper.toDto(
                 newProduct
         );
@@ -62,7 +58,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductDto getById(UUID uuid) {
         return productMapper.toDto(
-                repository.findByIdEager(uuid)
+                repository.findById(uuid)
                         .orElseThrow(ResourceNotFoundException::new)
         );
     }
@@ -92,7 +88,7 @@ public class ProductServiceImpl implements ProductService {
             );
         }
         return productMapper.toDto(
-                repository.update(product)
+                repository.save(product)
         );
     }
 

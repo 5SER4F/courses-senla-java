@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import org.springframework.test.web.servlet.MockMvc;
@@ -15,17 +16,18 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import org.uhanov.WebAppInitializerTestConfig;
+import org.uhanov.SecurityWebApplicationTestInitializer;
+import org.uhanov.config.SecurityTestConfig;
 import org.uhanov.dto.agerating.AgeRatingDto;
 import org.uhanov.dto.agerating.AgeRatingPostDto;
-import org.uhanov.dto.creator.CreatorAuthDto;
 import org.uhanov.dto.creator.CreatorDto;
+import org.uhanov.dto.creator.CreatorSignUpDto;
 import org.uhanov.dto.genre.GenreDto;
 import org.uhanov.dto.genre.GenrePostDto;
 import org.uhanov.dto.product.ProductDto;
 import org.uhanov.dto.product.ProductPostDto;
-import org.uhanov.dto.staff.StaffAuthDto;
 import org.uhanov.dto.staff.StaffFullDto;
+import org.uhanov.dto.staff.StaffSignUpDto;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -35,10 +37,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(SpringExtension.class)
-@SpringJUnitWebConfig(value = WebAppInitializerTestConfig.class)
+@SpringJUnitWebConfig(value = SecurityWebApplicationTestInitializer.class)
+@ContextConfiguration(classes = SecurityTestConfig.class)
 @ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class Test4Produc {
+public class Test4Product {
     @Autowired
     public WebApplicationContext wac;
     @Autowired
@@ -68,16 +71,16 @@ public class Test4Produc {
 
         if (addedStaff == null) {
             try {
-                StaffAuthDto staffAuthDto = StaffAuthDto.builder()
+                StaffSignUpDto staffSignUpDto = StaffSignUpDto.builder()
                         .password("password123")
-                        .firstname("John")
+                        .username("PRODUCT_STAFF")
                         .surname("Doe")
                         .birthDate(LocalDate.of(1990, 1, 1))
                         .registrationDate(LocalDateTime.now())
                         .build();
                 MvcResult result = mvc.perform(MockMvcRequestBuilders.post(Test1Staff.PATH_PREFIX)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(staffAuthDto)))
+                                .content(objectMapper.writeValueAsString(staffSignUpDto)))
                         .andReturn();
 
                 assertEquals(result.getResponse().getStatus(), HttpStatus.CREATED.value());
@@ -87,15 +90,15 @@ public class Test4Produc {
                         StaffFullDto.class
                 );
 
-                CreatorAuthDto creatorAuthDto = CreatorAuthDto.builder()
+                CreatorSignUpDto creatorSignUpDto = CreatorSignUpDto.builder()
                         .password("password123")
-                        .name("CreatorName")
+                        .name("PRODUCT_CREATOR")
                         .registrationDate(LocalDateTime.now())
                         .build();
 
                 MvcResult result4 = mvc.perform(MockMvcRequestBuilders.post(Test6Creator.PATH_PREFIX)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(creatorAuthDto)))
+                                .content(objectMapper.writeValueAsString(creatorSignUpDto)))
                         .andReturn();
 
                 assertEquals(result4.getResponse().getStatus(), HttpStatus.CREATED.value());
@@ -106,7 +109,7 @@ public class Test4Produc {
                 );
 
                 GenrePostDto genrePostDto = GenrePostDto.builder()
-                        .name("genre")
+                        .name("PRODUCT_GENRE")
                         .lastChangerId(addedStaff.getId())
                         .build();
 
@@ -122,7 +125,7 @@ public class Test4Produc {
                 );
 
                 AgeRatingPostDto ageRatingPostDto = AgeRatingPostDto.builder()
-                        .name("ageRating")
+                        .name("PRODUCT_AR")
                         .lastChangerId(addedStaff.getId())
                         .build();
 
@@ -158,7 +161,6 @@ public class Test4Produc {
                 .genresIds(Set.of(addedGenre.getId()))
                 .build();
         try {
-            System.out.println(objectMapper.writeValueAsString(productPostDto));
             MvcResult result = mvc.perform(MockMvcRequestBuilders.post(PATH_PREFIX)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(productPostDto)))
