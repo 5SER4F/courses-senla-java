@@ -21,6 +21,8 @@ import java.util.UUID;
 public class CreatorDto {
     private UUID id;
     private String name;
+    private String username;
+    private String email;
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime registrationDate;

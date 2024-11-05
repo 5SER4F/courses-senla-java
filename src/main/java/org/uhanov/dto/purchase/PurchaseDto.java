@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 import org.uhanov.dto.product.ProductDto;
 import org.uhanov.dto.serializer.LocalDateTimeDeserializer;
 import org.uhanov.dto.serializer.LocalDateTimeSerializer;
-import org.uhanov.dto.user.UserShortDto;
+import org.uhanov.dto.user.CustomerShortDto;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -23,11 +23,10 @@ import java.util.UUID;
 @AllArgsConstructor
 public class PurchaseDto {
     private UUID id;
-    private BigDecimal cost;
+    private BigDecimal finalCost;
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime purchaseDate;
-
-    private UserShortDto buyer;
+    private CustomerShortDto buyer;
     private ProductDto product;
 }

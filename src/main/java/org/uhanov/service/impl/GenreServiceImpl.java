@@ -2,6 +2,8 @@ package org.uhanov.service.impl;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.uhanov.dto.genre.GenreDto;
@@ -9,7 +11,6 @@ import org.uhanov.dto.genre.GenrePostDto;
 import org.uhanov.dto.mapper.GenreMapper;
 import org.uhanov.exception.ResourceNotFoundException;
 import org.uhanov.model.Genre;
-import org.uhanov.model.Staff;
 import org.uhanov.repository.api.GenreRepository;
 import org.uhanov.repository.api.StaffRepository;
 import org.uhanov.service.api.GenreService;
@@ -29,10 +30,7 @@ public class GenreServiceImpl implements GenreService {
     @Transactional
     @Override
     public GenreDto create(GenrePostDto genreDto) {
-        Staff creator = staffRepository.findById(genreDto.getLastChangerId())
-                .orElseThrow(ResourceNotFoundException::new);
         Genre newGenre = genreMapper.toModel(genreDto);
-        newGenre.setLastChanger(creator);
         return genreMapper.toDto(
                 repository.save(newGenre)
         );
@@ -51,14 +49,8 @@ public class GenreServiceImpl implements GenreService {
     public GenreDto update(GenrePostDto genreDto) {
         Genre genre = getEntityById(genreDto.getId());
         genreMapper.updateGenre(genreDto, genre);
-        if (genreDto.getLastChangerId() != null) {
-            genre.setLastChanger(
-                    staffRepository.findById(genreDto.getLastChangerId())
-                            .orElseThrow(ResourceNotFoundException::new)
-            );
-        }
         return genreMapper.toDto(
-                repository.update(genre)
+                repository.save(genre)
         );
     }
 
@@ -66,6 +58,13 @@ public class GenreServiceImpl implements GenreService {
     @Override
     public void delete(UUID uuid) {
         repository.deleteById(uuid);
+    }
+
+    @Transactional
+    @Override
+    public Page<GenreDto> getAll(Pageable pageable) {
+        return repository.findAll(pageable)
+                .map(genreMapper::toDto);
     }
 
     private Genre getEntityById(UUID uuid) {

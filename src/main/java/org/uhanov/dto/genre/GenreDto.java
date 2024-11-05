@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.uhanov.dto.staff.StaffShortDto;
 
 import java.util.UUID;
 
@@ -17,6 +16,5 @@ import java.util.UUID;
 public class GenreDto {
     private UUID id;
     private String name;
-    private StaffShortDto lastChanger;
 
 }

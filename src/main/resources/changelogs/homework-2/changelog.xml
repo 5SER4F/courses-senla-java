@@ -34,16 +34,16 @@
         <sqlFile encoding="utf8" path="./sql/07.create-purchase-table.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
-    <changeSet id="homework-2-age_rating" author="Seraphim Uhanov">
-        <sqlFile encoding="utf8" path="./sql/09.create-age_rating-table.sql" relativeToChangelogFile="true"/>
+    <changeSet id="homework-2-customer" author="Seraphim Uhanov">
+        <sqlFile encoding="utf8" path="./sql/10.create-customer-table.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
     <changeSet id="homework-2-add-index" author="Seraphim Uhanov">
-        <sqlFile encoding="utf8" path="./sql/10.add-indexes.sql" relativeToChangelogFile="true"/>
+        <sqlFile encoding="utf8" path="./sql/11.add-indexes.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
     <changeSet id="homework-2-add-foreign_key" author="Seraphim Uhanov">
-        <sqlFile encoding="utf8" path="./sql/11.add-foreign_keys.sql" relativeToChangelogFile="true"/>
+        <sqlFile encoding="utf8" path="./sql/12.add-foreign_keys.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
 </databaseChangeLog>

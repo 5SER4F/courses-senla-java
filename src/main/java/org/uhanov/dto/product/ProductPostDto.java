@@ -9,7 +9,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.uhanov.model.AgeRating;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.Set;
 import java.util.UUID;
@@ -27,9 +29,9 @@ public class ProductPostDto {
     private LocalDate dateAdded;
     private Double price;
     private Double discount;
-
+    @NotNull
     private UUID creatorId;
-    private UUID ageRatingId;
+    private AgeRating ageRating;
     private Set<UUID> genresIds;
 
 }

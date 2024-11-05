@@ -16,5 +16,4 @@ import java.util.UUID;
 public class GenrePostDto {
     private UUID id;
     private String name;
-    private UUID lastChangerId;
 }

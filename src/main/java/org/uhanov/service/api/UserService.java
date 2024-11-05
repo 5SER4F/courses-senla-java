@@ -1,21 +1,25 @@
 package org.uhanov.service.api;
 
-import org.uhanov.dto.user.MoneyTransferDto;
-import org.uhanov.dto.user.UserAuthDto;
-import org.uhanov.dto.user.UserFullDto;
+import org.uhanov.dto.JwtAuthenticationResponse;
+import org.uhanov.dto.SignInDto;
+import org.uhanov.dto.creator.CreatorDto;
+import org.uhanov.dto.creator.CreatorPostDto;
+import org.uhanov.dto.staff.StaffFullDto;
+import org.uhanov.dto.staff.StaffPostDto;
+import org.uhanov.dto.user.CustomerFullDto;
+import org.uhanov.dto.user.CustomerPostDto;
 
 import java.util.UUID;
 
-
 public interface UserService {
+    JwtAuthenticationResponse signIn(SignInDto signInDto);
 
-    UserFullDto create(UserAuthDto dto);
+    CustomerFullDto signUpCustomer(CustomerPostDto customerPostDto);
 
-    UserFullDto getById(UUID uuid);
+    CreatorDto signUpCreator(CreatorPostDto creatorPostDto);
 
-    UserFullDto update(UserAuthDto dto);
+    StaffFullDto signUpStaff(StaffPostDto staffPostDto);
 
-    void delete(UUID uuid);
+    void deleteAccount(UUID uuid);
 
-    void moneyTransfer(UUID senderId, MoneyTransferDto moneyTransferDto);
 }

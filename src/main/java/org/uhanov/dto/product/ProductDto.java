@@ -9,9 +9,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.uhanov.dto.agerating.AgeRatingDto;
 import org.uhanov.dto.creator.CreatorDto;
 import org.uhanov.dto.genre.GenreDto;
+import org.uhanov.model.AgeRating;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -32,6 +32,6 @@ public class ProductDto {
     private Double discount;
 
     private CreatorDto creator;
-    private AgeRatingDto ageRating;
+    private AgeRating ageRating;
     private Set<GenreDto> genres;
 }

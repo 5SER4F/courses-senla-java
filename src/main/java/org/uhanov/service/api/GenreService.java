@@ -1,5 +1,7 @@
 package org.uhanov.service.api;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.uhanov.dto.genre.GenreDto;
 import org.uhanov.dto.genre.GenrePostDto;
 
@@ -18,4 +20,6 @@ public interface GenreService {
 
 
     void delete(UUID uuid);
+
+    Page<GenreDto> getAll(Pageable pageable);
 }

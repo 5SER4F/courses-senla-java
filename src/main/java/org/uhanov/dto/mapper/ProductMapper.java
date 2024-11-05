@@ -4,9 +4,9 @@ import org.mapstruct.*;
 import org.springframework.stereotype.Component;
 import org.uhanov.dto.product.ProductDto;
 import org.uhanov.dto.product.ProductPostDto;
-import org.uhanov.model.Product;
+import org.uhanov.model.product.Product;
 
-@Mapper(componentModel = "spring", uses = {CreatorMapper.class, AgeRatingMapper.class, GenreMapper.class})
+@Mapper(componentModel = "spring", uses = {CreatorMapper.class, GenreMapper.class})
 @Component
 public interface ProductMapper {
     Product toModel(ProductPostDto dto);

@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS creator (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid (),
-  password varchar NOT NULL,
+  id uuid PRIMARY KEY,
   name varchar NOT NULL,
-  registration_date timestamp
+  balance float DEFAULT 0,
+  last_settlement_date timestamp DEFAULT LOCALTIMESTAMP
 );

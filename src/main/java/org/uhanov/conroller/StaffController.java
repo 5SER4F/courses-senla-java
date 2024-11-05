@@ -1,12 +1,16 @@
 package org.uhanov.conroller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.uhanov.dto.staff.StaffAuthDto;
 import org.uhanov.dto.staff.StaffFullDto;
+import org.uhanov.dto.staff.StaffPostDto;
+import org.uhanov.exception.InvalidLoginException;
+import org.uhanov.security.JwtAuthenticationFilter;
+import org.uhanov.security.JwtUtil;
 import org.uhanov.service.api.StaffService;
 
 import java.util.UUID;
@@ -14,46 +18,43 @@ import java.util.UUID;
 @RestController
 @RequestMapping(path = "/staff")
 @RequiredArgsConstructor
+@Slf4j
 public class StaffController {
     private final StaffService service;
-    private final ObjectMapper objectMapper;
+    private final JwtUtil jwtUtil;
 
-
-    @PostMapping()
-    public ResponseEntity<StaffFullDto> create(
-            @RequestBody StaffAuthDto dto
-    ) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(service.create(dto));
-    }
-
-
+    @PreAuthorize("hasAnyAuthority('STAFF')")
     @PatchMapping("/{staffId}")
     public ResponseEntity<StaffFullDto> update(
             @PathVariable("staffId") UUID staffId,
-            @RequestBody StaffAuthDto dto
+            @RequestBody StaffPostDto dto,
+            @RequestHeader(name = JwtAuthenticationFilter.HEADER_NAME)
+            String jwtToken
     ) {
+        compareIds(staffId, jwtToken);
         dto.setId(staffId);
+        log.info("Обновление сотрудника:" + dto);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(service.update(dto));
     }
 
-
-    @DeleteMapping("/{staffId}")
-    public ResponseEntity delete(
-            @PathVariable("staffId") UUID staffId
-    ) {
-        service.delete(staffId);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT)
-                .build();
-    }
-
+    @PreAuthorize("hasAnyAuthority('STAFF')")
     @GetMapping("/{staffId}")
     public ResponseEntity<StaffFullDto> get(
-            @PathVariable("staffId") UUID staffId
+            @PathVariable("staffId") UUID staffId,
+            @RequestHeader(name = JwtAuthenticationFilter.HEADER_NAME)
+            String jwtToken
     ) {
+        log.info("Запрос сотрудника:" + staffId);
+        compareIds(staffId, jwtToken);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(service.getById(staffId));
+    }
+
+    private void compareIds(UUID creatorId, String jwtToken) {
+        if (!creatorId.equals(jwtUtil.extractId(jwtToken))) {
+            throw new InvalidLoginException("Попытка попытка доступа к чужому аккаунту");
+        }
     }
 
 }

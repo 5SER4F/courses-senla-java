@@ -1,29 +1,28 @@
 package org.uhanov.model;
 
-import lombok.*;
+import java.time.LocalDate;
 
-import javax.persistence.*;
-import java.util.UUID;
+public enum AgeRating {
+    EC(3 * DaysInYear.ONE_YEAR_IN_DAYS),
+    E(6 * DaysInYear.ONE_YEAR_IN_DAYS),
+    E10_PLUS(10 * DaysInYear.ONE_YEAR_IN_DAYS),
+    T(13 * DaysInYear.ONE_YEAR_IN_DAYS),
+    M(17 * DaysInYear.ONE_YEAR_IN_DAYS),
+    AO(18 * DaysInYear.ONE_YEAR_IN_DAYS);
 
-@Entity
-@Table(name = "age_rating")
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Data
-public class AgeRating {
-    @Id
-    @GeneratedValue(generator = "uuid-generator")
-    @Column(name = "id", columnDefinition = "UUID")
-    private UUID id;
-    @Column(name = "name", nullable = false)
-    private String name;
+    private final long minimalAge;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "add_by", columnDefinition = "uuid NOT NULL", referencedColumnName = "id")
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
-    private Staff lastChanger;
+    AgeRating(long minimalAge) {
+        this.minimalAge = minimalAge;
+    }
 
+    public boolean isPassAgeFilter(LocalDate userBirthDate) {
+        return LocalDate.now()
+                .minusDays(minimalAge)
+                .compareTo(userBirthDate) >= 0;
+    }
 
+    private interface DaysInYear {
+        int ONE_YEAR_IN_DAYS = 365;
+    }
 }

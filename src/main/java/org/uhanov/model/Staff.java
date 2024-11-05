@@ -1,44 +1,31 @@
 package org.uhanov.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.uhanov.model.user.User;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.Set;
-import java.util.UUID;
 
 @Entity
 @Table(name = "staff")
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class Staff {
-    @Id
-    @GeneratedValue(generator = "uuid-generator")
-    @Column(name = "id", columnDefinition = "UUID")
-    private UUID id;
-    @Column(name = "password", nullable = false)
-    private String password;
-    @Column(name = "firstname", nullable = false)
+public class Staff extends User implements UserDetails {
+    @Column(name = "firstname", nullable = false, unique = true)
     private String firstname;
     @Column(name = "surname", nullable = false)
     private String surname;
-    @Column(name = "birth_date", nullable = false)
+    @Column(name = "nickname", nullable = false)
+    private String nickname;
+    @Column(name = "birth_date", nullable = false, updatable = false)
     private LocalDate birthDate;
-    @Column(name = "registration_date", nullable = false)
-    @EqualsAndHashCode.Exclude
-    private LocalDateTime registrationDate;
 
-    @OneToMany(mappedBy = "lastChanger", fetch = FetchType.LAZY)
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
-    private Set<AgeRating> ageRatingsAddedBy;
-
-    @OneToMany(mappedBy = "lastChanger", fetch = FetchType.LAZY)
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
-    private Collection<Genre> genresAddedBy;
 }

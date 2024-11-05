@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -17,6 +18,7 @@ import javax.sql.DataSource;
 import java.util.Properties;
 
 @Configuration
+@EnableJpaRepositories(basePackages = "org.uhanov")
 @EnableAspectJAutoProxy
 @EnableTransactionManagement
 @ComponentScan("org.uhanov")
@@ -69,7 +71,7 @@ public class TestConfig {
         Properties jpaProperties = new Properties();
         jpaProperties.put("hibernate.show_sql", "true");
         jpaProperties.put("hibernate.format_sql", "true");
-        jpaProperties.put("hibernate.hbm2ddl.auto", "create-drop");//"create-drop"
+        jpaProperties.put("hibernate.hbm2ddl.auto", "create-drop");
         jpaProperties.setProperty("hibernate.type.descriptor.java.BigDecimalTypeDescriptor.useScientificNotation",
                 "false");
         jpaProperties.put("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
